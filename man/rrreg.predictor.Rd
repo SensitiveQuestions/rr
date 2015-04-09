@@ -1,0 +1,133 @@
+\name{rrreg.predictor} 
+\alias{rrreg.predictor} 
+\title{Randomized Response as a Regression Predictor} 
+\description{ 
+\code{rrreg.predictor} is used to jointly model the randomized response item as both outcome and predictor 
+  for an additional outcome given a set of covariates.
+} 
+
+\usage{
+  rrreg.predictor(formula, p, p0, p1, q, design, data, rr.item, 
+                model.outcome = "logistic", fit.sens = "bayesglm", 
+                fit.outcome = "bayesglm", bstart = NULL, tstart = NULL, 
+                parstart = TRUE, maxIter = 10000, verbose = FALSE, 
+                optim = FALSE, em.converge = 10^(-4), 
+                glmMaxIter = 20000, estconv = TRUE, 
+                solve.tolerance = .Machine$double.eps)
+}
+
+\arguments{ 
+  \item{formula}{An object of class "formula": a symbolic description of the model to be fitted with the randomized response 
+  item as one of the covariates.} 
+  \item{p}{The probability of receiving the sensitive question (Mirrored Question Design, Unrelated Question Design); the 
+  probability of answering truthfully (Forced Response Design); the probability of selecting a red card from the 'yes' stack 
+  (Disguised Response Design).}
+  \item{p0}{The probability of forced 'no' (Forced Response Design).}
+  \item{p1}{The probability of forced 'yes' (Forced Response Design).}
+  \item{q}{The probability of answering 'yes' to the unrelated question, which is assumed to be independent of covariates   
+  (Unrelated Question Design).}
+  \item{design}{One of the four standard designs: "forced-known", "mirrored", "disguised", or "unrelated-known".}
+  \item{data}{A data frame containing the variables in the model. Observations with missingness are list-wise deleted.}
+  \item{rr.item}{A string containing the name of the randomized response item variable in the data frame.}
+  \item{model.outcome}{Currently the function only allows for logistic regression, meaning the outcome variable must be 
+  binary.}
+  \item{fit.sens}{Indicator for whether to use Bayesian generalized linear modeling (bayesglm) in the Maximization step for 
+  the Expectation-Maximization (EM) algorithm to generate coefficients for the randomized response item as the outcome. 
+  Default is \code{"bayesglm"}; otherwise input \code{"glm"}.}
+  \item{fit.outcome}{Indicator for whether to use Bayesian generalized linear modeling (bayesglm) in the Maximization step 
+  for the EM algorithm to generate coefficients for the outcome variable given in the formula with the randomized response 
+  item as a covariate. Default is \code{"bayesglm"}; otherwise input \code{"glm"}.}
+  \item{bstart}{Optional starting values of coefficient estimates for the randomized response item as outcome for the EM 
+  algorithm.}
+  \item{tstart}{Optional starting values of coefficient estimates for the outcome variable given in the formula for the EM 
+  algorithm.}
+  \item{parstart}{Option to use the function \code{rrreg} to generate starting values of coefficient estimates for the 
+  randomized response item as outcome for the EM algorithm. The default is \code{TRUE}, but if starting estimates are 
+  inputted by the user in \code{bstart}, this option is overidden.}
+  \item{maxIter}{Maximum number of iterations for the Expectation-Maximization algorithm. The default is \code{10000}.} 
+  \item{verbose}{A logical value indicating whether model diagnostics counting the number of EM iterations are printed out. 
+  The default is \code{FALSE}.}
+  \item{optim}{A logical value indicating whether to use the quasi-Newton "BFGS" method to calculate the variance-covariance 
+  matrix and standard errors. The default is \code{FALSE}.}
+  \item{em.converge}{A value specifying the satisfactory degree of convergence under the EM algorithm. The default is 
+  \code{10^(-4)}.}
+  \item{glmMaxIter}{A value specifying the maximum number of iterations to run the EM algorithm. The default is \code{20000}
+  .}
+  \item{estconv}{Option to base convergence on the absolute value of the difference between subsequent coefficients 
+  generated through the EM algorithm rather than the subsequent log-likelihoods. The default is \code{TRUE}.}
+  \item{solve.tolerance}{When standard errors are calculated, this option specifies the tolerance of the matrix inversion operation solve.}
+}
+
+\details{
+  This function allows users to perform multivariate regression analysis with the randomized response item as a predictor 
+  for a separate outcome of interest. It does so by jointly modeling the randomized response item as both outcome and 
+  predictor for an additional outcome given the same set of covariates. Four standard designs are accepted by this function: 
+  mirrored question, forced response, disguised response, and unrelated question.
+  }
+
+\value{
+  \code{rrreg.predictor} returns an object of class "rrpredreg" associated with the randomized response item as predictor.   
+  The object \code{rrpredreg} is a list that contains the following components (the inclusion of some components such as the 
+  design parameters are dependent upon the design used):
+
+  \item{est.t}{Point estimates for the effects of the randomized response item as predictor and other covariates on the 
+  separate outcome variable specified in the formula.}
+  \item{se.t}{Standard errors for estimates of the effects of the randomized response item as predictor and other covariates 
+  on the separate outcome variable specified in formula.}
+  \item{est.b}{Point estimates for the effects of covariates on the randomized response item.}
+  \item{vcov}{Variance-covariance matrix for estimates of the effects of the randomized response item as predictor and other covariates 
+  on the separate outcome variable specified in formula as well as for estimates of the effects of covariates on the randomized response 
+  item.}
+  \item{se.b}{Standard errors for estimates of the effects of covariates on the randomized response item.}
+  \item{data}{The \code{data} argument.}
+  \item{coef.names}{Variable names as defined in the data frame.}
+  \item{x}{The model matrix of covariates.}
+  \item{y}{The randomized response vector.}
+  \item{o}{The separate outcome of interest vector.}
+  \item{design}{Call of standard design used: "forced-known", "mirrored", "disguised", or "unrelated-known".}
+  \item{p}{The \code{p} argument.}
+  \item{p0}{The \code{p0} argument.}
+  \item{p1}{The \code{p1} argument.}
+  \item{q}{The \code{q} argument.}
+  \item{call}{The matched call.}
+}
+
+\references{
+  Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design and Analysis of the Randomized Response Technique."   
+  \emph{Working Paper.} Available at \url{http://imai.princeton.edu/research/randresp.html}.
+}
+
+\examples{
+\dontrun{
+data(nigeria)
+
+## Define design parameters
+
+set.seed(44)
+
+p <- 2/3  # probability of answering honestly in Forced Response Design
+p1 <- 1/6 # probability of forced 'yes'
+p0 <- 1/6 # probability of forced 'no'
+
+## Fit joint model of responses to an outcome regression of joining a civic 
+## group and the randomized response item of having a militant social connection
+
+rr.q1.pred.obj <- 
+    rrreg.predictor(civic ~ cov.asset.index + cov.married + I(cov.age/10) + 
+              I((cov.age/10)^2) + cov.education + cov.female 
+              + rr.q1, rr.item = "rr.q1", parstart = FALSE, estconv = TRUE,
+              data = nigeria, verbose = FALSE, optim = TRUE,
+              p = p, p1 = p1, p0 = p0, design = "forced-known")
+
+summary(rr.q1.pred.obj)
+
+## Replicates Table 4 in Blair, Imai, and Zhou (2014)
+}
+}
+ 
+\seealso{
+  \code{\link{rrreg}} for multivariate regression.
+}
+\keyword{regression}
+\keyword{predictor}
+\keyword{joint model}

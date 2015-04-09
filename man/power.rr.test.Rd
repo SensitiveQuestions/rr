@@ -1,0 +1,115 @@
+\name{power.rr.test} 
+\alias{power.rr.test} 
+\title{Power Analysis for Randomized Response} 
+\description{ 
+\code{power.rr.test} is used to conduct power analysis for randomized response survey designs.
+} 
+
+\usage{
+  power.rr.test(p, p0, p1, q, design, n = NULL, r, 
+                presp, presp.null = NULL, sig.level, 
+                prespT, prespC, prespT.null = NULL, prespC.null,
+                power = NULL, type = c("one.sample", "two.sample"), 
+                alternative = c("one.sided", "two.sided"),
+                solve.tolerance = .Machine$double.eps)
+}
+
+\arguments{ 
+  \item{p}{The probability of receiving the sensitive question (Mirrored Question Design, Unrelated Question Design); the 
+  probability of answering truthfully (Forced Response Design); the probability of selecting a red card from the 'yes' stack 
+  (Disguised Response Design).}
+  \item{p0}{The probability of forced 'no' (Forced Response Design).}
+  \item{p1}{The probability of forced 'yes' (Forced Response Design).}
+  \item{q}{The probability of answering 'yes' to the unrelated question, which is assumed to be independent of covariates 
+  (Unrelated Question Design).}
+  \item{design}{Call of design (including modified designs) used: "forced-known", "mirrored", "disguised", "unrelated-known", 
+  "forced-unknown", and "unrelated-unknown".}
+  \item{n}{Number of observations. Exactly one of 'n' or 'power' must be NULL.}
+  \item{r}{For the modified designs only (i.e. "forced-unknown" for Forced Response with Unknown Probability and "unrelated-unknown" for Unrelated Question with Unknown Probability), \code{r} is the proportion of respondents allocated to the   
+  first group, which is the group that is directed to answer the sensitive question truthfully with probability \code{p} as 
+  opposed to the second group which is directed to answer the sensitive question truthfully with probability \code{1-p}.}
+  \item{presp}{For a one sample test, the probability of possessing the sensitive trait under the alternative hypothesis.}
+  \item{presp.null}{For a one sample test, the probability of possessing the sensitive trait under the null hypothesis. The 
+  default is \code{NULL} meaning zero probability of possessing the sensitive trait.}
+  \item{sig.level}{Significance level (Type I error probability).}
+  \item{prespT}{For a two sample test, the probability of the treated group possessing the sensitive trait under the 
+  alternative hypothesis.}
+  \item{prespC}{For a two sample test, the probability of the control group possessing the sensitive trait under the 
+  alternative hypothesis.}
+  \item{prespT.null}{For a two sample test, the probability of the treated group possessing the sensitive trait under the 
+  null hypothesis. The default is \code{NULL} meaning there is no difference between the treated and control groups, 
+  specifically that \code{prespT.null} is the same as \code{prespC.null}, the probability of the control group possessing the 
+  sensitive trait under the null hypothesis.}
+  \item{prespC.null}{For a two sample test,  the probability of the control group possessing the sensitive trait under the   
+  null hypothesis.}
+  \item{power}{Power of test (Type II error probability). Exactly one of 'n' or 'power' must be NULL.}
+  \item{type}{One or two sample test. For a two sample test, the alternative and null hypotheses refer to the difference 
+  between the two samples of the probabilities of possessing the sensitive trait.}
+  \item{alternative}{One or two sided test.}
+  \item{solve.tolerance}{When standard errors are calculated, this option specifies the tolerance of the matrix inversion operation solve.}
+}
+
+\details{
+  This function allows users to conduct power analysis for randomized response survey designs, both for the standard designs   
+  ("forced-known", "mirrored", "disguised", "unrelated-known") and modified designs ("forced-unknown", and "unrelated  
+  -unknown").
+}
+
+\value{
+  \code{power.rr.test} contains the following components (the inclusion of some components such as the design parameters are 
+  dependent upon the design used):
+
+  \item{n}{Point estimates for the effects of covariates on the randomized response item.}
+  \item{r}{Standard errors for estimates of the effects of covariates on the randomized response item.}
+  \item{presp}{For a one sample test, the probability of possessing the sensitive trait under the alternative hypothesis.   
+  For a two sample test, the difference between the probabilities of possessing the sensitive trait for the treated and 
+  control groups under the alternative hypothesis.}
+  \item{presp.null}{For a one sample test, the probability of possessing the sensitive trait under the null hypothesis. For 
+  a two sample test, the difference between the probabilities of possessing the sensitive trait for the treated and control 
+  groups under the null hypothesis.}
+  \item{sig.level}{Significance level (Type I error probability).}
+  \item{power}{Power of test (Type II error probability).}
+  \item{type}{One or two sample test.}  
+  \item{alternative}{One or two sided test.}
+}
+
+\references{
+  Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design and Analysis of the Randomized Response Technique."   
+  \emph{Working Paper.} Available at \url{http://imai.princeton.edu/research/randresp.html}.
+}
+
+\examples{
+
+## Calculate the power to detect a sensitive item proportion of .2
+## with the forced design with known probabilities of 2/3 in truth-telling group,
+## 1/6 forced to say "yes" and 1/6 forced to say "no" and sample size of 200.
+
+power.rr.test(p = 2/3, p1 = 1/6, p0 = 1/6, n = 200, 
+             presp = .2, presp.null = 0,
+             design = "forced-known", sig.level = .01,
+             type = "one.sample", alternative = "one.sided")
+				       
+\dontrun{
+
+## Find power varying the number of respondents from 250 to 2500 and 
+## the population proportion of respondents possessing the sensitive 
+## trait from 0 to .15
+
+presp.seq <- seq(from = 0, to = .15, by = .0025)
+n.seq <- c(250, 500, 1000, 2000, 2500)
+power <- list()
+for(n in n.seq) {
+    power[[n]] <- rep(NA, length(presp.seq))
+    for(i in 1:length(presp.seq))
+        power[[n]][i] <- power.rr.test(p = 2/3, p1 = 1/6, p0 = 1/6, n = n, 
+                                       presp = presp.seq[i], presp.null = 0,
+                                       design = "forced-known", sig.level = .01, 
+                                       type = "one.sample",
+                                       alternative = "one.sided")$power
+    }
+    
+## Replicates the results for Figure 2 in Blair, Imai, and Zhou (2014)
+}
+}
+ 
+\keyword{power analysis}

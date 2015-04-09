@@ -1,0 +1,127 @@
+\name{rrreg.bayes}
+\alias{rrreg.bayes}
+\title{Bayesian Randomized Response Regression} 
+\description{ 
+Function to conduct multivariate regression analyses of survey data with the randomized response technique using Bayesian MCMC.
+} 
+
+\usage{
+  rrreg.bayes(formula, p, p0, p1, design, data, 
+                        group.mixed, formula.mixed = ~1,
+                        verbose = FALSE, n.draws = 10000,
+                        burnin = 5000, thin = 1,
+                        beta.start, beta.mu0, beta.A0, beta.tune,
+                        Psi.start, Psi.df, Psi.scale, Psi.tune)
+}
+
+\arguments{ 
+  \item{formula}{An object of class "formula": a symbolic description of the model to be fitted.} 
+  \item{p}{The probability of receiving the sensitive question (Mirrored Question Design, Unrelated Question Design); the   
+  probability of answering truthfully (Forced Response Design); the probability of selecting a red card from the 'yes' stack 
+  (Disguised Response Design).}
+  \item{p0}{The probability of forced 'no' (Forced Response Design).} 
+  \item{p1}{The probability of forced 'yes' (Forced Response Design).}
+  \item{design}{Character indicating the design. Currently only "forced-known" is supported.}
+  \item{data}{A data frame containing the variables in the model.}
+  \item{group.mixed}{A string indicating the variable name of a numerical group indicator specifying which group each individual belongs to for a mixed effects model.}
+  \item{formula.mixed}{To specify a mixed effects model, include this formula object for the group-level fit. ~1 allows intercepts to vary, and including covariates in the formula allows the slopes to vary also.}
+  \item{verbose}{A logical value indicating whether model diagnostics are printed out during fitting.}
+  \item{n.draws}{Number of MCMC iterations.}
+  \item{burnin}{The number of initial MCMC iterations that are discarded.}
+  \item{thin}{The interval of thinning between consecutive retained iterations (1 for no thinning).}
+  \item{beta.start}{Optional starting values for the sensitive item fit. This should be a vector of length the number of covariates.}
+  \item{beta.mu0}{Optional vector of prior means for the sensitive item fit parameters, a vector of length the number of covariates.}
+  \item{beta.A0}{Optional matrix of prior precisions for the sensitive item fit parameters, a matrix of dimension the number of covariates.}
+  \item{beta.tune}{A required vector of tuning parameters for the Metropolis algorithm for the sensitive item fit. This must be set and refined by the user until the acceptance ratios are approximately .4 (reported in the output).}
+  \item{Psi.start}{Optional starting values for the variance of the random effects in the mixed effects models. This should be a scalar.}
+  \item{Psi.df}{Optional prior degrees of freedom parameter for the variance of the random effects in the mixed effects models.}
+  \item{Psi.scale}{Optional prior scale parameter for the variance of the random effects in the mixed effects models.}
+  \item{Psi.tune}{A required vector of tuning parameters for the Metropolis algorithm for variance of the random effects in the mixed effects models. This must be set and refined by the user until the acceptance ratios are approximately .4 (reported in the output).}
+}
+
+\details{
+This function allows the user to perform regression analysis on data from the randomized response technique using a Bayesian MCMC algorithm.
+
+The Metropolis algorithm for the Bayesian MCMC estimators in this function must be tuned to work correctly. The \code{beta.tune} and, for the mixed effects model \code{Psi.tune}, are required, and the values, one for each estimated parameter, will need to be manipulated. The output of the \code{rrreg.bayes} function displays the acceptance ratios from the Metropolis algorithm. If these values are far from 0.4, the tuning parameters should be changed until the ratios approach 0.4.
+
+Convergence is at times difficult to achieve, so we recommend running multiple chains from overdispersed starting values by, for example, running an MLE using the rrreg() function, and then generating a set of overdispersed starting values using those estimates and their estimated variance-covariance matrix. An example is provided below for each of the possible designs. Running \code{summary()} after such a procedure will output the Gelman-Rubin convergence statistics in addition to the estimates. If the G-R statistics are all below 1.1, the model is said to have converged.
+}
+
+\value{\code{rrreg.bayes} returns an object of class "rrreg.bayes".  The function \code{summary} is used to obtain a table of the results.
+
+  \item{beta}{The coefficients for the sensitive item fit. An object of class "mcmc" that can be analyzed using the \code{coda} package.}
+  \item{data}{The \code{data} argument.}
+  \item{coef.names}{Variable names as defined in the data frame.}
+  \item{x}{The model matrix of covariates.}
+  \item{y}{The randomized response vector.}
+  \item{design}{Call of standard design used: "forced-known", "mirrored", "disguised", or "unrelated-known".}
+  \item{p}{The \code{p} argument.}
+  \item{p0}{The \code{p0} argument.}
+  \item{p1}{The \code{p1} argument.}
+  \item{mixed}{Indicator for whether a mixed effects model was run.}
+  \item{call}{the matched call.}
+  
+If a mixed-effects model is used, then several additional objects are included:
+\item{Psi}{The coefficients for the group-level fit. An object of class "mcmc" that can be analyzed using the \code{coda} package.}
+\item{gamma}{The random effects estimates. An object of class "mcmc" that can be analyzed using the \code{coda} package.}
+\item{coef.names.mixed}{Variable names for the predictors for the second-level model}
+\item{z}{The predictors for the second-level model.}
+\item{groups}{A vector of group indicators.}
+
+}
+
+\references{
+  Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design and Analysis of the Randomized Response Technique."   
+  \emph{Working Paper.} Available at \url{http://imai.princeton.edu/research/randresp.html}.
+}
+
+\examples{
+ \dontrun{ 
+ 
+data(nigeria)
+ 
+## Define design parameters
+p <- 2/3  # probability of answering honestly in Forced Response Design
+p1 <- 1/6 # probability of forced 'yes'
+p0 <- 1/6 # probability of forced 'no'
+
+## run three chains with overdispersed starting values
+
+set.seed(1)
+
+## starting values constructed from MLE model
+mle.estimates <- rrreg(rr.q1 ~ cov.asset.index + cov.married + 
+                         I(cov.age/10) + I((cov.age/10)^2) + cov.education + cov.female, 
+                         data = nigeria, 
+                      p = p, p1 = p1, p0 = p0,
+                      design = "forced-known")
+
+library(MASS)
+draws <- mvrnorm(n = 3, mu = coef(mle.estimates), 
+  Sigma = vcov(mle.estimates) * 9)
+
+## run three chains
+bayes.1 <- rrreg.bayes(rr.q1 ~ cov.asset.index + cov.married + 
+                         I(cov.age/10) + I((cov.age/10)^2) + cov.education + cov.female,   
+                      data = nigeria, p = p, p1 = p1, p0 = p0,
+                      beta.tune = .0001, beta.start = draws[1,],
+                      design = "forced-known")
+
+bayes.2 <- rrreg.bayes(rr.q1 ~ cov.asset.index + cov.married + 
+                         I(cov.age/10) + I((cov.age/10)^2) + cov.education + cov.female,   
+                      data = nigeria, p = p, p1 = p1, p0 = p0,
+                      beta.tune = .0001, beta.start = draws[2,],
+                      design = "forced-known")
+
+bayes.3 <- rrreg.bayes(rr.q1 ~ cov.asset.index + cov.married + 
+                         I(cov.age/10) + I((cov.age/10)^2) + cov.education + cov.female,   
+                      data = nigeria, p = p, p1 = p1, p0 = p0,
+                      beta.tune = .0001, beta.start = draws[3,],
+                      design = "forced-known")
+                      
+bayes <- as.list(bayes.1, bayes.2, bayes.3)
+
+summary(bayes)
+
+ }
+}
