@@ -8,7 +8,7 @@ env:
  global:
    - CRAN: http://cran.rstudio.com
 
-script: "Rscript -e 'library(devtools); check(); test()'"
+script: "Rscript -e 'library(devtools); check(args = "--as-cran"); test()'"
 
 notifications:
   email:
