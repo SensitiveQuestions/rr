@@ -1,13 +1,12 @@
 language: r
 
-sudo: required
-
 env:
  global:
    - CRAN: http://cran.rstudio.com
 
-r_github_packages:
-  - hadley/testthat
+r_packages:
+  - testthat
+  - roxygen2
 
 warnings_are_errors: true
 
