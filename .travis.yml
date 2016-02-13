@@ -4,6 +4,9 @@ env:
  global:
    - CRAN: http://cran.rstudio.com
 
+r-packages:
+ - nlme
+
 warnings_are_errors: true
 
 script: "Rscript -e 'library(devtools); install_deps(dependencies = TRUE, upgrade = TRUE); check(); test()'"
