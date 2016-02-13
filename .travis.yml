@@ -6,6 +6,10 @@ env:
 
 r-packages:
  - nlme
+ - arm
+ - MASS
+ - coda
+ - testthat
 
 warnings_are_errors: true
 
