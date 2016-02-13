@@ -5,13 +5,9 @@ env:
  global:
    - CRAN: http://cran.rstudio.com
 
-r_packages:
-  - testthat
-  - roxygen2
-
 warnings_are_errors: true
 
-script: "Rscript -e 'library(devtools); check(); test()'"
+script: "Rscript -e 'library(devtools); install_deps(pkg = '.', dependencies = TRUE); check(); test()'"
 
 notifications:
   email:
