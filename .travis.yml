@@ -1,14 +1,8 @@
 language: r
-cache: packages
 
 env:
  global:
    - CRAN: http://cran.rstudio.com
-
-r_packages:
-  - testthat
-  - roxygen2
-  - rmarkdown
 
 warnings_are_errors: true
 
