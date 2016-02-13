@@ -19,8 +19,8 @@ script:
   - "cd .."
   - "R CMD build rr"
   - "R CMD INSTALL rr_1.3.tar.gz"
-  - "R CMD CHECK rr_1.3.tar.gz"
-  - "Rscript -e 'library(devtools); test()'"
+  - "R CMD check rr_1.3.tar.gz"
+  - "Rscript -e 'library(devtools); test('rr')'"
 
 notifications:
   email:
