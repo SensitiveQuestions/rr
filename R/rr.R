@@ -1,5 +1,97 @@
 logistic <- function(x) exp(x)/(1+exp(x))
 
+#' Randomized Response Regression
+#' 
+#' \code{rrreg} is used to conduct multivariate regression analyses of survey
+#' data using randomized response methods.
+#' 
+#' This function allows users to perform multivariate regression analysis on
+#' data from the randomized response technique.  Four standard designs are
+#' accepted by this function: mirrored question, forced response, disguised
+#' response, and unrelated question. The method implemented by this function is
+#' the Maximum Likelihood (ML) estimation for the Expectation-Maximization (EM)
+#' algorithm.
+#' 
+#' @usage rrreg(formula, p, p0, p1, q, design, data, start = NULL, maxIter =
+#' 10000, verbose = FALSE, optim = FALSE, em.converge = 10^(-8), glmMaxIter =
+#' 10000, solve.tolerance = .Machine$double.eps)
+#' @param formula An object of class "formula": a symbolic description of the
+#' model to be fitted.
+#' @param p The probability of receiving the sensitive question (Mirrored
+#' Question Design, Unrelated Question Design); the probability of answering
+#' truthfully (Forced Response Design); the probability of selecting a red card
+#' from the 'yes' stack (Disguised Response Design). For "mirrored" and
+#' "disguised" designs, p cannot equal .5.
+#' @param p0 The probability of forced 'no' (Forced Response Design).
+#' @param p1 The probability of forced 'yes' (Forced Response Design).
+#' @param q The probability of answering 'yes' to the unrelated question, which
+#' is assumed to be independent of covariates (Unrelated Question Design).
+#' @param design One of the four standard designs: "forced-known", "mirrored",
+#' "disguised", or "unrelated-known".
+#' @param data A data frame containing the variables in the model.
+#' @param start Optional starting values of coefficient estimates for the
+#' Expectation-Maximization (EM) algorithm.
+#' @param maxIter Maximum number of iterations for the Expectation-Maximization
+#' algorithm. The default is \code{10000}.
+#' @param verbose A logical value indicating whether model diagnostics counting
+#' the number of EM iterations are printed out.  The default is \code{FALSE}.
+#' @param optim A logical value indicating whether to use the quasi-Newton
+#' "BFGS" method to calculate the variance-covariance matrix and standard
+#' errors. The default is \code{FALSE}.
+#' @param em.converge A value specifying the satisfactory degree of convergence
+#' under the EM algorithm. The default is \code{10^(-8)}.
+#' @param glmMaxIter A value specifying the maximum number of iterations to run
+#' the EM algorithm. The default is \code{10000}.
+#' @param solve.tolerance When standard errors are calculated, this option
+#' specifies the tolerance of the matrix inversion operation solve.
+#' @return \code{rrreg} returns an object of class "rrreg".  The function
+#' \code{summary} is used to obtain a table of the results.  The object
+#' \code{rrreg} is a list that contains the following components (the inclusion
+#' of some components such as the design parameters are dependent upon the
+#' design used):
+#' 
+#' \item{est}{Point estimates for the effects of covariates on the randomized
+#' response item.} \item{vcov}{Variance-covariance matrix for the effects of
+#' covariates on the randomized response item.} \item{se}{Standard errors for
+#' estimates of the effects of covariates on the randomized response item.}
+#' \item{data}{The \code{data} argument.} \item{coef.names}{Variable names as
+#' defined in the data frame.} \item{x}{The model matrix of covariates.}
+#' \item{y}{The randomized response vector.} \item{design}{Call of standard
+#' design used: "forced-known", "mirrored", "disguised", or "unrelated-known".}
+#' \item{p}{The \code{p} argument.} \item{p0}{The \code{p0} argument.}
+#' \item{p1}{The \code{p1} argument.} \item{q}{The \code{q} argument.}
+#' \item{call}{The matched call.}
+#' @seealso \code{\link{predict.rrreg}} for predicted probabilities.
+#' @references Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design
+#' and Analysis of the Randomized Response Technique." Working Paper. Available
+#' at \url{http://imai.princeton.edu/research/randresp.html}.
+#' @keywords regression
+#' @examples
+#' 
+#' \dontrun{
+#' data(nigeria)
+#' 
+#' set.seed(1)
+#' 
+#' ## Define design parameters
+#' p <- 2/3  # probability of answering honestly in Forced Response Design
+#' p1 <- 1/6 # probability of forced 'yes'
+#' p0 <- 1/6 # probability of forced 'no'
+#' 
+#' ## Fit linear regression on the randomized response item of whether 
+#' ## citizen respondents had direct social contacts to armed groups
+#' 
+#' rr.q1.reg.obj <- rrreg(rr.q1 ~ cov.asset.index + cov.married + 
+#'                     I(cov.age/10) + I((cov.age/10)^2) + cov.education + cov.female,   
+#'                     data = nigeria, p = p, p1 = p1, p0 = p0, 
+#'                     design = "forced-known")
+#'   
+#' summary(rr.q1.reg.obj)
+#' 
+#' ## Replicates Table 3 in Blair, Imai, and Zhou (2014)
+#' }
+#' 
+#' @export
 rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL, 
                   maxIter = 10000, verbose = FALSE, 
                   optim = FALSE, em.converge = 10^(-8), 
@@ -161,6 +253,7 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
 
 }
 
+#' @export
 summarize.design <- function(design, p, p0, p1, q) {
     
     design.short <- strsplit(design, "-")[[1]][1]
@@ -171,7 +264,6 @@ summarize.design <- function(design, p, p0, p1, q) {
     
 }
     
-
 rrcd <- function(p, p0, p1, q, design) {
    if(missing(design)) {
         stop("Missing design specification, see documentation")
@@ -242,7 +334,7 @@ rrcd <- function(p, p0, p1, q, design) {
               d = d))
 }
 
-
+#' @export
 vcov.rrreg <- function(object, ...){
 
   vcov <- object$vcov
@@ -253,6 +345,7 @@ vcov.rrreg <- function(object, ...){
 
 }
 
+#' @export
 coef.rrreg <- function(object, ...){
 
   coef <- object$est
@@ -263,6 +356,99 @@ coef.rrreg <- function(object, ...){
 
 }
 
+
+
+#' Predicted Probabilities for Randomized Response Regression
+#' 
+#' \code{predict.rrreg} is used to generate predicted probabilities from a
+#' multivariate regression object of survey data using randomized response
+#' methods.
+#' 
+#' This function allows users to generate predicted probabilities for the
+#' randomized response item given an object of class "rrreg" from the
+#' \code{rrreg()} function. Four standard designs are accepted by this
+#' function: mirrored question, forced response, disguised response, and
+#' unrelated question. The design, already specified in the "rrreg" object, is
+#' then directly inputted into this function.
+#' 
+#' @usage predict.rrreg(object, given.y = FALSE, alpha = .05, n.sims =
+#' 1000, avg = FALSE, newdata = NULL, quasi.bayes = FALSE, keep.draws = FALSE,
+#' ...)
+#' @param object An object of class "rrreg" generated by the \code{rrreg()}
+#' function.
+#' @param given.y Indicator of whether to use "y" the response vector to
+#' calculate the posterior prediction of latent responses. Default is
+#' \code{FALSE}, which simply generates fitted values using the logistic
+#' regression.
+#' @param alpha Confidence level for the hypothesis test to generate upper and
+#' lower confidence intervals. Default is \code{ .05}.
+#' @param n.sims Number of sampled draws for quasi-bayesian predicted
+#' probability estimation. Default is \code{1000}.
+#' @param avg Whether to output the mean of the predicted probabilities and
+#' uncertainty estimates. Default is \code{FALSE}.
+#' @param newdata Optional new data frame of covariates provided by the user.
+#' Otherwise, the original data frame from the "rreg" object is used.
+#' @param quasi.bayes Option to use Monte Carlo simulations to generate
+#' uncertainty estimates for predicted probabilities. Default is \code{FALSE}.
+#' @param keep.draws Option to return the Monte Carlos draws of the quantity of
+#' interest, for use in calculating differences for example.
+#' @param ... Further arguments to be passed to \code{predict.rrreg()} command.
+#' @return \code{predict.rrreg} returns predicted probabilities either for each
+#' observation in the data frame or the average over all observations. The
+#' output is a list that contains the following components:
+#' 
+#' \item{est}{Predicted probabilities for the randomized response item
+#' generated either using fitted values, posterior predictions, or
+#' quasi-Bayesian simulations. If \code{avg} is set to \code{TRUE}, the output
+#' will only include the mean estimate.} \item{se}{Standard errors for the
+#' predicted probabilities of the randomized response item generated using
+#' Monte Carlo simulations. If \code{quasi.bayes} is set to \code{FALSE}, no
+#' standard errors will be outputted.} \item{ci.lower}{Estimates for the lower
+#' confidence interval. If \code{quasi.bayes} is set to \code{FALSE}, no
+#' confidence interval estimate will be outputted.} \item{ci.upper}{Estimates
+#' for the upper confidence interval. If \code{quasi.bayes} is set to
+#' \code{FALSE}, no confidence interval estimate will be outputted.}
+#' \item{qoi.draws}{Monte Carlos draws of the quantity of interest, returned
+#' only if \code{keep.draws} is set to \code{TRUE}.}
+#' @seealso \code{\link{rrreg}} to conduct multivariate regression analyses in
+#' order to generate predicted probabilities for the randomized response item.
+#' @references Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design
+#' and Analysis of the Randomized Response Technique."  \emph{Working Paper.}
+#' Available at \url{http://imai.princeton.edu/research/randresp.html}.
+#' @keywords predicted probabilities fitted values
+#' @examples
+#' 
+#' \dontrun{
+#' data(nigeria)
+#' 
+#' set.seed(1)
+#' 
+#' ## Define design parameters
+#' p <- 2/3  # probability of answering honestly in Forced Response Design
+#' p1 <- 1/6 # probability of forced 'yes'
+#' p0 <- 1/6 # probability of forced 'no'
+#' 
+#' ## Fit linear regression on the randomized response item of 
+#' ## whether citizen respondents had direct social contacts to armed groups
+#' 
+#' rr.q1.reg.obj <- rrreg(rr.q1 ~ cov.asset.index + cov.married + I(cov.age/10) + 
+#'                       I((cov.age/10)^2) + cov.education + cov.female,   
+#'                       data = nigeria, p = p, p1 = p1, p0 = p0, 
+#'                       design = "forced-known")
+#' 
+#' ## Generate the mean predicted probability of having social contacts to 
+#' ## armed groups across respondents using quasi-Bayesian simulations. 
+#' 
+#' rr.q1.reg.pred <- predict(rr.q1.reg.obj, given.y = FALSE, 
+#'                                 avg = TRUE, quasi.bayes = TRUE, 
+#'                                 n.sims = 10000)
+#' 
+#' ## Replicates Table 3 in Blair, Imai, and Zhou (2014)
+#' }
+#' 
+#' @importFrom MASS mvrnorm
+#' 
+#' @method predict rrreg 
 predict.rrreg <- function(object, given.y = FALSE, alpha = .05, 
                           n.sims = 1000, avg = FALSE, newdata = NULL, 
                           quasi.bayes = FALSE, keep.draws = FALSE, ...) {
