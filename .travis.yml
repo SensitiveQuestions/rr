@@ -1,19 +1,20 @@
 language: r
+cache: packages
 
 env:
  global:
    - CRAN: http://cran.rstudio.com
 
-r-packages:
- - nlme
- - arm
- - MASS
- - coda
- - testthat
+r_packages:
+  - testthat
+  - nlme
+  - arm
+  - coda
+  - MASS
 
 warnings_are_errors: true
 
-script: "Rscript -e 'library(devtools); install_deps(dependencies = TRUE, upgrade = TRUE); check(); test()'"
+script: "Rscript -e 'library(devtools); check(); test()'"
 
 notifications:
   email:
