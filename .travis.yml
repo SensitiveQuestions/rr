@@ -20,8 +20,8 @@ script:
   - "R CMD build rr"
   - "R CMD INSTALL rr_1.3.tar.gz"
   - "R CMD check rr_1.3.tar.gz"
-  - "cd rr"
-  - "Rscript -e 'library(devtools); test()'"
+  - "cd rr/tests"
+  - "Rscript testthat.R"
 
 notifications:
   email:
