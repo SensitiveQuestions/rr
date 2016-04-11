@@ -1,17 +1,27 @@
 language: r
-
-sudo: required
+cache: packages
 
 env:
  global:
    - CRAN: http://cran.rstudio.com
 
-r_github_packages:
-  - hadley/testthat
+r_packages:
+  - testthat
+  - nlme
+  - lme4
+  - arm
+  - coda
+  - MASS
 
 warnings_are_errors: true
 
-script: "Rscript -e 'library(devtools); check(); test()'"
+script: 
+  - "cd .."
+  - "R CMD build rr"
+  - "R CMD INSTALL rr_1.3.tar.gz"
+  - "R CMD check rr_1.3.tar.gz"
+  - "cd rr/tests"
+  - "Rscript testthat.R"
 
 notifications:
   email:
