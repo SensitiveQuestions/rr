@@ -216,8 +216,8 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
          score.rr <- as.vector(y * ( c * gx + d )^(-1) * c * gx * (1-gx)) * x +
            as.vector((1-y) * ( 1 - c * gx - d )^(-1) * (-c) * gx * (1-gx)) * x
 
-         information.rr <- crossprod(score.rr) / nrow(x)
-         vcov <- solve(information.rr, tol = solve.tolerance) / nrow(x)
+         information.rr <- crossprod(score.rr)/nrow(x)
+         vcov <- solve(information.rr, tol = solve.tolerance)/nrow(x)
          vcov <- vcov/(bscale %*% t(bscale))
          
          se <- sqrt(diag(vcov))
@@ -266,8 +266,7 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
             g <- c()
             group.labels <- names(h)
             for (i in 1:length(h)){
-                wg <- w[group == group.labels[i]]
-                g[i] <- sum(c(h[i]) - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta))/sum(w)
+                g[i] <- sum(h[i] - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta))/n
             }
             if (missing(W)) W <- diag(length(c(m1, g)))
             return(t(c(m1, g)) %*% W %*% c(m1, g))
@@ -282,58 +281,80 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
             g <- c()
             group.labels <- names(h)
             for (i in 1:length(h)){
-                wg <- w[group == group.labels[i]]
-                g[i] <- sum(c(h[i]) - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta))/sum(w)
-                grad.iter <- colSums(-c(dlogistic(x[group == group.labels[i], , drop = FALSE] %*% beta)) * x[group == group.labels[i], , drop = FALSE])/sum(w)
+                g[i] <- sum(h[i] - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta))/n
+                grad.iter <- colSums(-c(dlogistic(x[group == group.labels[i], , drop = FALSE] %*% beta)) * x[group == group.labels[i], , drop = FALSE])/n
                 jbn <- rbind(jbn, grad.iter)
             } 
             if (missing(W)) W <- diag(length(c(score, g)))
-            t(2 * c(score, g)) %*% W %*% jbn
+            t(c(score, g)) %*% (W + t(W)) %*% jbn
         }
 
         # gmm weighting matrix
-        weightMatrix <- function (beta, y, x, w = NULL, c, d, h, group, matrixMethod) {
+        weightMatrix <- function (beta, y, x, w = NULL, c, d, h, group, 
+            matrixMethod = c("standard", "cue", "princomp")) {
+
             n <- length(y)
             if (missing(w)) w <- rep(1, n)
             coef <- (c * y / (c * logistic(x %*% beta) + d) - 
                 c * (1 - y) / (1 - c * logistic(x %*% beta) - d)) * c(dlogistic(x %*% beta))
             w.coef <- c(coef) * w
-            dg <- c()
+            
+            vg <- c()
             group.labels <- names(h)
             for (i in 1:length(group.labels)){
-                wg <- w[group == group.labels[i]]
-                dg[i] <- sum(c(h[i]) - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta)^2)/sum(w)
+                aux.mom <- h[i] - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta)
+                vg[i] <- t(aux.mom) %*% aux.mom/n
             }
-            matrix1 <- t(w.coef * x) %*% (w.coef * x)/sum(w)
-            matrix2 <- diag(dg, nrow = length(dg))
+
+            matrix1 <- t(w.coef * x) %*% (w.coef * x)/n
+            matrix2 <- diag(vg, nrow = length(vg))
             efficient.W <- solve(adiag(matrix1, matrix2))
+
             if (matrixMethod == "standard" | matrixMethod == "cue") {
+            
               efficient.W
+            
             } else if (matrixMethod == "princomp") {
-              decomp <- eigen(efficient.W)
-              decomp$values * t(decomp$vectors) %*% decomp$vectors
+
+              k <- ncol(adiag(matrix1, matrix2))        
+              decomp <- eigen(adiag(matrix1, matrix2))
+
+              threshold <- .95 * sum(decomp$values)
+              curr.sum <- r <- 0
+              while (curr.sum <= threshold) {
+                r <- r + 1
+                curr.sum <- sum(decomp$values[1:r]) 
+              }
+
+              princompW <- matrix(0, nr = k, nc = k)
+              for (value in 1:r) {
+                princompW <- princompW + 1/decomp$values[value] * decomp$vectors[, value] %*% t(decomp$vectors[, value])
+              }
+              princompW
+
             }
         }
 
         # continuously updating objective function
-        gmmCue <- function (beta, y, x, w = NULL, c, d, h, group, matrixMethod) {
+        gmmCue <- function (beta, y, x, w = NULL, c, d, h, group, 
+            matrixMethod = c("standard", "cue", "princomp")) {
             n <- length(y)
             if (missing(w)) w <- rep(1, n)
             m1 <- score(beta, y, x, w, c, d)
             g <- c()
             group.labels <- names(h)
             for (i in 1:length(h)){
-                wg <- w[group == group.labels[i]]
-                g[i] <- sum(c(h[i]) - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta))/sum(w)
+                g[i] <- sum(h[i] - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta))/n
             }
             W <- weightMatrix(beta = beta, y = y, x = x, w = w, c = c, d = d, 
-              h = h, group = group, matrixMethod = matrixMethod)
+                h = h, group = group, matrixMethod = matrixMethod)
             t(c(m1, g)) %*% W %*% c(m1, g)
         }
 
 
         # coefs with auxiliary information
-        rrAux <- function (beta, y, x, w = NULL, c, d , W = NULL, h = NULL, group = NULL, matrixMethod) {
+        rrAux <- function (beta, y, x, w = NULL, c, d , W = NULL, h = NULL, group = NULL, 
+            matrixMethod = c("standard", "cue", "princomp")) {
             n <- length(y)
             if (missing(w)) w <- rep(1, n)
             if (missing(W) & missing(h)) {
@@ -341,43 +362,54 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
             } else if (missing(W)) {
                 W <- diag(length(c(ncol(x), h)))
             }
+
             if (matrixMethod == "standard" | matrixMethod == "princomp") {
+              # step 1
               weightMatrix <- weightMatrix(beta = beta, y = y, x = x, h = h, group = group, c = c, d = d, matrixMethod = matrixMethod)
               fit1 <- optim(par = beta, fn = gmm, gr = grad, method = "BFGS", 
-                control = list(maxit = 500), y = y, x = x, h = h, group = group, 
+                control = list(maxit = maxIter), y = y, x = x, h = h, group = group, 
                 c = c, d = d, W = weightMatrix)
               newpar <- fit1$par
+
+              # step 2
               weightMatrix <- weightMatrix(beta = newpar, y = y, x = x, h = h, group = group, c = c, d = d, matrixMethod = matrixMethod)
               fit2 <- optim(par = newpar, fn = gmm, gr = grad, method = "BFGS", 
-                control = list(maxit = 500), y = y, x = x, h = h, group = group, 
+                control = list(maxit = maxIter), y = y, x = x, h = h, group = group, 
                 c = c, d = d, W = weightMatrix)
-              fit2             
+              fit2    
+
             } else {
+
               fit <- optim(par = beta, fn = gmmCue, method = "BFGS", 
-                control = list(maxit = 500), y = y, x = x, h = h, group = group, 
+                control = list(maxit = maxIter), y = y, x = x, h = h, group = group, 
                 c = c, d = d, matrixMethod = matrixMethod)
               fit
+
             }
         }
 
         # vcov with auxiliary information
-        rrAuxVcov <- function(beta, y, x, w, c, d, h = NULL, group = NULL, matrixMethod) {
+        rrAuxVcov <- function(beta, y, x, w, c, d, h = NULL, group = NULL, 
+            matrixMethod = c("standard", "cue", "princomp")) {
+            
             n <- length(y)
             if (missing(w)) w <- rep(1, n)
             jbn <- jbn(beta, y, x, w, c, d)
             group.labels <- names(h)
+            
             for (i in 1:length(group.labels)) {
-                wg <- w[group == group.labels[i]]
-                grad.iter <- t(w[group == group.labels[i]]) %*% (-c(dlogistic(x[group == group.labels[i], , drop = FALSE] %*% beta)) * x[group == group.labels[i], , drop = FALSE])/sum(w)
+                grad.iter <- colSums(-c(dlogistic(x[group == group.labels[i], , drop = FALSE] %*% beta)) * x[group == group.labels[i], , drop = FALSE])/n
                 jbn <- rbind(jbn, grad.iter)
             }
+
             weightMatrix <- weightMatrix(beta = beta, y = y, x = x, h = h, group = group, c = c, d = d, matrixMethod = matrixMethod)
-            if (matrixMethod != "princomp") {
-              solve(t(jbn) %*% weightMatrix %*% jbn)/(sum(w))
+            
+            if (matrixMethod == "princomp") {
+              ginv(t(jbn) %*% weightMatrix %*% jbn)/n
             } else {
-              V <- solve(weightMatrix(beta = beta, y = y, x = x, h = h, group = group, c = c, d = d, matrixMethod = "standard"))
-              solve(t(jbn) %*% weightMatrix %*% jbn) %*% t(jbn) %*% weightMatrix %*% V %*% t(weightMatrix) %*% jbn %*% solve(t(jbn) %*% weightMatrix %*% jbn)/sum(w)
+              solve(t(jbn) %*% weightMatrix %*% jbn)/(n - length(beta) - length(h))
             }
+
         }
 
         
@@ -390,7 +422,8 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
         
         # Sargan-Hansen overidentification test
         J <- true.fit$value * n
-        overid.p <- round(pchisq(J, df = length(h)), 3)
+        overid.p <- round(1 - pchisq(J, df = length(h)), 3)
+
     }
 
 
