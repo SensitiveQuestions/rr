@@ -68,7 +68,6 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #' @keywords regression
 #' @examples
 #' 
-#' \dontrun{
 #' data(nigeria)
 #' 
 #' set.seed(1)
@@ -89,7 +88,6 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #' summary(rr.q1.reg.obj)
 #' 
 #' ## Replicates Table 3 in Blair, Imai, and Zhou (2014)
-#' }
 #' 
 #' @export
 rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL, 
@@ -253,7 +251,6 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
 
 }
 
-#' @export
 summarize.design <- function(design, p, p0, p1, q) {
     
     design.short <- strsplit(design, "-")[[1]][1]

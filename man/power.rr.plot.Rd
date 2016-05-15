@@ -100,8 +100,6 @@ sample sizes are shown as different lines in grayscale.
 }
 \examples{
 
-
-\dontrun{
 ## Generate a power plot for the forced design with known 
 ## probabilities of 2/3 in truth-telling group, 1/6 forced to say "yes" 
 ## and 1/6 forced to say "no", varying the number of respondents from 
@@ -119,7 +117,6 @@ power.rr.plot(p = 2/3, p1 = 1/6, p0 = 1/6, n.seq = n.seq,
 				       
     
 ## Replicates the results for Figure 2 in Blair, Imai, and Zhou (2014)
-}
 
 }
 \references{

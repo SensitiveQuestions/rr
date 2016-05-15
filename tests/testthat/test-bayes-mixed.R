@@ -153,7 +153,7 @@ test_that("basic code runs when there are covariates sent to the mixed model",{
   )
   
   expect_output(
-    summary(bayes.mixed.cov), "Individual-level predictors"
+    print(summary(bayes.mixed.cov)), "Individual-level predictors"
   )
   
   expect_is(
@@ -217,7 +217,7 @@ test_that("standard functions coef, sd.rrreg.bayes, summary work", {
   )
   
   expect_output(
-    summary(bayes), "Individual-level predictors"
+    print(summary(bayes)), "Individual-level predictors"
   )
   
   expect_is(
@@ -337,11 +337,11 @@ test_that("doing multiple chains works as well as coef, sd.rrreg.bayes, summary 
   summ <- summary(bayes)
   
   expect_output(
-    summ, "Individual-level predictors"
+    print(summ), "Individual-level predictors"
   )
   
   expect_output(
-    summ, "Gelman-Rubin statistics"
+    print(summ), "Gelman-Rubin statistics"
   )
   
 }) 

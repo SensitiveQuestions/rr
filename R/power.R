@@ -578,8 +578,6 @@ se.f.rr <- function(p, p0, p1, q, design, n, r, presp){
 #' @keywords power analysis
 #' @examples
 #' 
-#' 
-#' \dontrun{
 #' ## Generate a power plot for the forced design with known 
 #' ## probabilities of 2/3 in truth-telling group, 1/6 forced to say "yes" 
 #' ## and 1/6 forced to say "no", varying the number of respondents from 
@@ -597,8 +595,8 @@ se.f.rr <- function(p, p0, p1, q, design, n, r, presp){
 #' 				       
 #'     
 #' ## Replicates the results for Figure 2 in Blair, Imai, and Zhou (2014)
-#' }
 #' 
+#' @importFrom grDevices gray
 #' @export
 power.rr.plot <- function(p, p0, p1, q, design, n.seq, r, presp.seq, presp.null = NULL, sig.level, 
                           prespT.seq, prespC.seq, prespT.null = NULL, prespC.null,

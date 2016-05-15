@@ -123,8 +123,6 @@ If the G-R statistics are all below 1.1, the model is said to have
 converged.
 }
 \examples{
-
- \dontrun{ 
  
 data(nigeria)
  
@@ -148,13 +146,13 @@ library(MASS)
 draws <- mvrnorm(n = 3, mu = coef(mle.estimates), 
   Sigma = vcov(mle.estimates) * 9)
 
+\dontrun{ 
 ## run three chains
 bayes.1 <- rrreg.bayes(rr.q1 ~ cov.asset.index + cov.married + 
                          I(cov.age/10) + I((cov.age/10)^2) + cov.education + cov.female,   
                       data = nigeria, p = p, p1 = p1, p0 = p0,
                       beta.tune = .0001, beta.start = draws[1,],
                       design = "forced-known")
-
 bayes.2 <- rrreg.bayes(rr.q1 ~ cov.asset.index + cov.married + 
                          I(cov.age/10) + I((cov.age/10)^2) + cov.education + cov.female,   
                       data = nigeria, p = p, p1 = p1, p0 = p0,
@@ -170,8 +168,8 @@ bayes.3 <- rrreg.bayes(rr.q1 ~ cov.asset.index + cov.married +
 bayes <- as.list(bayes.1, bayes.2, bayes.3)
 
 summary(bayes)
+}
 
- }
 }
 \references{
 Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design

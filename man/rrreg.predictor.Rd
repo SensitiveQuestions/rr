@@ -128,7 +128,6 @@ question, forced response, disguised response, and unrelated question.
 }
 \examples{
 
-\dontrun{
 data(nigeria)
 
 ## Define design parameters
@@ -141,7 +140,7 @@ p0 <- 1/6 # probability of forced 'no'
 
 ## Fit joint model of responses to an outcome regression of joining a civic 
 ## group and the randomized response item of having a militant social connection
-
+\dontrun{
 rr.q1.pred.obj <- 
     rrreg.predictor(civic ~ cov.asset.index + cov.married + I(cov.age/10) + 
               I((cov.age/10)^2) + cov.education + cov.female 
@@ -150,9 +149,9 @@ rr.q1.pred.obj <-
               p = p, p1 = p1, p0 = p0, design = "forced-known")
 
 summary(rr.q1.pred.obj)
-
-## Replicates Table 4 in Blair, Imai, and Zhou (2014)
 }
+## Replicates Table 4 in Blair, Imai, and Zhou (2014)
+
 }
 \references{
 Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design

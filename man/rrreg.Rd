@@ -85,7 +85,6 @@ algorithm.
 }
 \examples{
 
-\dontrun{
 data(nigeria)
 
 set.seed(1)
@@ -106,7 +105,6 @@ rr.q1.reg.obj <- rrreg(rr.q1 ~ cov.asset.index + cov.married +
 summary(rr.q1.reg.obj)
 
 ## Replicates Table 3 in Blair, Imai, and Zhou (2014)
-}
 
 }
 \references{

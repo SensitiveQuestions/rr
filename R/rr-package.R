@@ -39,6 +39,8 @@
 #' \emph{Journal of the American Statistical Association.}
 #' Available at \url{http://graemeblair.com/papers/randresp.pdf}.
 #' @keywords package
+#' @importFrom graphics abline axis lines mtext plot
+#' @importFrom stats as.formula binomial coef complete.cases cov dcauchy df glm glm.control model.frame model.matrix model.matrix.default model.response na.omit pnorm qnorm quantile rnorm runif sd vcov
 NULL
 
 

@@ -106,7 +106,6 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #' @keywords regression predictor joint model
 #' @examples
 #' 
-#' \dontrun{
 #' data(nigeria)
 #' 
 #' ## Define design parameters
@@ -119,7 +118,7 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #' 
 #' ## Fit joint model of responses to an outcome regression of joining a civic 
 #' ## group and the randomized response item of having a militant social connection
-#' 
+#' \dontrun{
 #' rr.q1.pred.obj <- 
 #'     rrreg.predictor(civic ~ cov.asset.index + cov.married + I(cov.age/10) + 
 #'               I((cov.age/10)^2) + cov.education + cov.female 
@@ -128,9 +127,9 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #'               p = p, p1 = p1, p0 = p0, design = "forced-known")
 #' 
 #' summary(rr.q1.pred.obj)
-#' 
-#' ## Replicates Table 4 in Blair, Imai, and Zhou (2014)
 #' }
+#' ## Replicates Table 4 in Blair, Imai, and Zhou (2014)
+#' 
 #' @importFrom arm bayesglm
 #' @export
 rrreg.predictor <- function(formula, p, p0, p1, q, design, data, rr.item, model.outcome = "logistic",
