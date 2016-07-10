@@ -297,6 +297,7 @@ rrreg.bayes <- function(formula, p, p0, p1, design, data,
                           p = p,
                           p1 = p1,
                           p0 = p0,
+                          beta.tune = beta.tune,
                           mixed = mixed,
                           call = match.call())
     
@@ -331,6 +332,8 @@ rrreg.bayes <- function(formula, p, p0, p1, design, data,
                           p = p,
                           p1 = p1,
                           p0 = p0,
+                          beta.tune = beta.tune,
+                          Psi.tune = Psi.tune,
                           mixed = mixed,
                           call = match.call())
     
