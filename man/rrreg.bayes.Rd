@@ -84,7 +84,8 @@ data frame.} \item{x}{The model matrix of covariates.} \item{y}{The
 randomized response vector.} \item{design}{Call of standard design used:
 "forced-known", "mirrored", "disguised", or "unrelated-known".} \item{p}{The
 \code{p} argument.} \item{p0}{The \code{p0} argument.} \item{p1}{The
-\code{p1} argument.} \item{mixed}{Indicator for whether a mixed effects
+\code{p1} argument.} \item{beta.tune}{The \code{beta.tune} argument.} 
+\item{mixed}{Indicator for whether a mixed effects
 model was run.} \item{call}{the matched call.}
 
 If a mixed-effects model is used, then several additional objects are
@@ -94,7 +95,7 @@ class "mcmc" that can be analyzed using the \code{coda} package.}
 can be analyzed using the \code{coda} package.}
 \item{coef.names.mixed}{Variable names for the predictors for the
 second-level model} \item{z}{The predictors for the second-level model.}
-\item{groups}{A vector of group indicators.}
+\item{groups}{A vector of group indicators.} \item{Psi.tune}{The \code{Psi.tune} argument.}
 }
 \description{
 Function to conduct multivariate regression analyses of survey data with the
