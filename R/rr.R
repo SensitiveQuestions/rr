@@ -1,4 +1,5 @@
 logistic <- function(x) exp(x)/(1+exp(x))
+dlogistic.coef <- function(x) exp(x) / (1 + exp(x))^2
 
 #' Randomized Response Regression
 #' 
