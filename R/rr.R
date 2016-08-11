@@ -1,4 +1,5 @@
 logistic <- function(x) exp(x)/(1+exp(x))
+dlogistic.coef <- function(x) exp(x) / (1 + exp(x))^2
 
 #' Randomized Response Regression
 #' 
@@ -93,7 +94,8 @@ logistic <- function(x) exp(x)/(1+exp(x))
 rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL, 
                   maxIter = 10000, verbose = FALSE, 
                   optim = FALSE, em.converge = 10^(-8), 
-                  glmMaxIter = 10000, solve.tolerance = .Machine$double.eps) {
+                  glmMaxIter = 10000, solve.tolerance = .Machine$double.eps, 
+                  h = NULL, group = NULL, use.gmm = FALSE, matrixMethod = "efficient") {
   
     df <- model.frame(formula, data, na.action = na.omit)
     x1 <- model.matrix.default(formula, df)
@@ -122,102 +124,278 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
         ##    llik <- llik + sum(dcauchy(x = par, scale = rep(2.5, length(par), log = TRUE))
         return(llik)
     }
+
+    if (use.gmm == FALSE) {
+      
+      ## NOW THE ALGORITHM
+  
+      ## set some starting values
+      if(!missing(start) & (length(start) != ncol(x)))
+          stop("The starting values are not the right dimensions. start should be a vector of length the number of variables, including the intercept if applicable.")
+          
+      if(!is.null(start))
+          par <- start
+      else
+          par <- rnorm(ncol(x))
+      gx <- logistic(x %*% par)
+  
+      ## start off with an infinitely negative log likelihood
+      pllik <- -Inf
+  
+      ## calculate the log likelihood at the starting values
+      llik <- obs.llik(par, y = y, x = x, c = c, d = d, gx = gx)
+  
+      ## set a counter to zero, which you will iterate
+      ## (this just allows to you stop after a maximum # of iterations if you want
+      ## e.g. 10k
+  
+      counter <- 0
+  
+      ## begin the while loop, which goes until the log likelihood it calculates
+      ## is very very close to the log likelihood at the last iteration (the
+      ## difference is less than 10^(-8) different
+  
+      while (((llik - pllik) > em.converge) & (counter < maxIter)) {
+  
+          ## first the E step is run each time, from the parameters at the end of the
+          ## last iteration, or the starting values in the first iteration
+          w1 <- (c*gx) /  (c*gx + d)
+          w0 <- c*(1-gx) / (1-c*gx - d)
+  
+          w <- rep(NA, n)
+          w[y == 0] <- w0[y==0]
+          w[y == 1] <- w1[y==1]
+  
+          ##if(bayesglm == FALSE) {
+          lfit <- glm(cbind(y, 1-y) ~ x - 1, family = binomial("logit"), weights = w, start = par,
+                      control = list(maxit = glmMaxIter))
+          ##} else {
+          ##    lfit <- bayesglm(as.formula(paste("cbind(", y.var, ", 1-", y.var, ") ~ ",
+          ##                                           paste(x.vars.ceiling, collapse=" + "))),
+          ##                          weights = dtmpC$w, family = binomial(logit),
+          ##                          start = coef.qufit.start, data = dtmpC,
+          ##                          control = glm.control(maxit = maxIter), scaled = F)
+          ##}
+          par <- coef(lfit)
+          ## update gx
+          gx <- logistic(x %*% par)
+  
+          pllik <- llik
+  
+          if(verbose==T)
+              cat(paste(counter, round(llik, 4), "\n"))
+  
+          ## calculate the new log likelihood with the parameters you just
+          ## estimated in the M step
+          llik <- obs.llik(par, y = y, x = x, c = c, d = d, gx = gx)
+  
+          counter <- counter + 1
+  
+          ## stop for obvious reasons
+          if (llik < pllik)
+              stop("log-likelihood is not monotonically increasing.")
+  
+          if(counter == (maxIter-1))
+              warning("number of iterations exceeded maximum in ML")
+  
+      } ## end of while loop
+  
+      # Rescale coefficients
+      bpar <- c(par/bscale)
+  
+      if(optim) {
+          MLEfit <- optim(par = par, fn = obs.llik, method = "BFGS",
+                          y = y, x = x,
+                          hessian = TRUE,
+                          control = list(maxit = 0, fnscale = -1),
+                          c = c, d = d)
+          vcov <- solve(-MLEfit$hessian, tol = solve.tolerance)
+          vcov <- vcov/(bscale %*% t(bscale))
+          
+          se <- sqrt(diag(vcov))
+      } else { 
+           score.rr <- as.vector(y * ( c * gx + d )^(-1) * c * gx * (1-gx)) * x +
+             as.vector((1-y) * ( 1 - c * gx - d )^(-1) * (-c) * gx * (1-gx)) * x
+  
+           information.rr <- crossprod(score.rr)/nrow(x)
+           vcov <- solve(information.rr, tol = solve.tolerance)/nrow(x)
+           vcov <- vcov/(bscale %*% t(bscale))
+           
+           se <- sqrt(diag(vcov))
+      }
+      
+    } else {
+
+      bpar <- start
+
+    }
     
-    ## NOW THE ALGORITHM
+    ## auxiliary data functionality checks 
+    if (!is.null(h) & is.null(group)) {
+      stop("Need to specify character vector of group assignments. See documentation")
+    } else if (is.null(h) & !is.null(group)) {
+      stop("Need to specify named vector of group moments. See documentation")
+    } 
 
-    ## set some starting values
-    if(!missing(start) & (length(start) != ncol(x)))
-        stop("The starting values are not the right dimensions. start should be a vector of length the number of variables, including the intercept if applicable.")
-        
-    if(!is.null(start))
-        par <- start
-    else
-        par <- rnorm(ncol(x))
-    gx <- logistic(x %*% par)
+    aux.check <- !(is.null(h) | is.null(group))
 
-    ## start off with an infinitely negative log likelihood
-    pllik <- -Inf
+    ## AUXILIARY DATA FUNCTIONALITY  
+    if (aux.check) {     
 
-    ## calculate the log likelihood at the starting values
-    llik <- obs.llik(par, y = y, x = x, c = c, d = d, gx = gx)
+        score <- function (beta, y, x, w = NULL, c, d ) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            coef <- (c * y / (c * logistic(x %*% beta) + d) - 
+                c * (1 - y) / (1 - c * logistic(x %*% beta) - d)) * c(dlogistic.coef(x %*% beta))
+            w.coef <- c(coef) * w
+            colSums(w.coef * x)/sum(w)
+        }
 
-    ## set a counter to zero, which you will iterate
-    ## (this just allows to you stop after a maximum # of iterations if you want
-    ## e.g. 10k
+        jbn <- function (beta, y, x, w = NULL, c, d ) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            coef1 <- (y * c/(c * logistic(x %*% beta) + d) -
+                (1 - y) * c /(1 - c * logistic(x %*% beta) - d)) *
+                    exp(x %*% beta) * (1 - exp(2 * x %*% beta)) / (1 + exp(x %*% beta))^4
+            coef2 <- (y * c^2 / (c * logistic(x %*% beta) + d)^2 + 
+                (1 - y) * c^2/(1 - c * logistic(x %*% beta) - d)^2) *
+                    exp(2 * x %*% beta)/(1 + exp(x %*% beta))^4
+            t(w * c(coef1 - coef2) * x) %*% x / sum(w)
+        }
 
-    counter <- 0
+        # gmm objective function
+        gmm <- function (beta, y, x, w = NULL, c, d, W = NULL, h, group) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            m1 <- score(beta, y, x, w, c, d)
+            g <- c()
+            group.labels <- names(h)
+            for (i in 1:length(h)){
+                wg <- w[group == group.labels[i]]
+                g[i] <- sum(c(h[i]) - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta))/sum(w)
+            }
+            if (missing(W)) W <- diag(length(c(m1, g)))
+            return(t(c(m1, g)) %*% W %*% c(m1, g))
+        }
 
-    ## begin the while loop, which goes until the log likelihood it calculates
-    ## is very very close to the log likelihood at the last iteration (the
-    ## difference is less than 10^(-8) different
+        # gmm gradient
+        grad <- function (beta, y, x, w = NULL, c, d , W = NULL, h, group) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            score <- score(beta, y, x, w, c, d)
+            jbn <- jbn(beta, y, x, w, c, d)
+            g <- c()
+            group.labels <- names(h)
+            for (i in 1:length(h)){
+                wg <- w[group == group.labels[i]]
+                g[i] <- sum(c(h[i]) - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta))/sum(w)
+                grad.iter <- colSums(-c(dlogistic.coef(x[group == group.labels[i], , drop = FALSE] %*% beta)) * x[group == group.labels[i], , drop = FALSE])/sum(w)
+                jbn <- rbind(jbn, grad.iter)
+            } 
+            if (missing(W)) W <- diag(length(c(score, g)))
+            t(2 * c(score, g)) %*% W %*% jbn
+        }
 
-    while (((llik - pllik) > em.converge) & (counter < maxIter)) {
+        # gmm weighting matrix
+        weight.matrix <- function (beta, y, x, w = NULL, c, d, h, group, matrixMethod) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            coef <- (c * y / (c * logistic(x %*% beta) + d) - 
+                c * (1 - y) / (1 - c * logistic(x %*% beta) - d)) * c(dlogistic.coef(x %*% beta))
+            w.coef <- c(coef) * w
+            dg <- c()
+            group.labels <- names(h)
+            for (i in 1:length(group.labels)){
+                wg <- w[group == group.labels[i]]
+                dg[i] <- sum(c(h[i]) - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta)^2)/sum(w)
+            }
+            matrix1 <- t(w.coef * x) %*% (w.coef * x)/sum(w)
+            matrix2 <- diag(dg, nrow = length(dg))
+            efficient.W <- solve(adiag(matrix1, matrix2))
+            if (matrixMethod == "efficient" | matrixMethod == "cue") {
+              efficient.W
+            } else if (matrixMethod == "princomp") {
+              decomp <- eigen(efficient.W)
+              decomp$values * t(decomp$vectors) %*% decomp$vectors
+            }
+        }
 
-        ## first the E step is run each time, from the parameters at the end of the
-        ## last iteration, or the starting values in the first iteration
-        w1 <- (c*gx) /  (c*gx + d)
-        w0 <- c*(1-gx) / (1-c*gx - d)
+        # continuously updating objective function
+        gmm.cue <- function (beta, y, x, w = NULL, c, d, h, group, matrixMethod) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            m1 <- score(beta, y, x, w, c, d)
+            g <- c()
+            group.labels <- names(h)
+            for (i in 1:length(h)){
+                wg <- w[group == group.labels[i]]
+                g[i] <- sum(c(h[i]) - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta))/sum(w)
+            }
+            W <- weight.matrix(beta = beta, y = y, x = x, w = w, c = c, d = d, 
+              h = h, group = group, matrixMethod = matrixMethod)
+            t(c(m1, g)) %*% W %*% c(m1, g)
+        }
 
-        w <- rep(NA, n)
-        w[y == 0] <- w0[y==0]
-        w[y == 1] <- w1[y==1]
 
-        ##if(bayesglm == FALSE) {
-        lfit <- glm(cbind(y, 1-y) ~ x - 1, family = binomial("logit"), weights = w, start = par,
-                    control = list(maxit = glmMaxIter))
-        ##} else {
-        ##    lfit <- bayesglm(as.formula(paste("cbind(", y.var, ", 1-", y.var, ") ~ ",
-        ##                                           paste(x.vars.ceiling, collapse=" + "))),
-        ##                          weights = dtmpC$w, family = binomial(logit),
-        ##                          start = coef.qufit.start, data = dtmpC,
-        ##                          control = glm.control(maxit = maxIter), scaled = F)
-        ##}
-        par <- coef(lfit)
-        ## update gx
-        gx <- logistic(x %*% par)
+        # coefs with auxiliary information
+        rr.true.coefs <- function (beta, y, x, w = NULL, c, d , W = NULL, h = NULL, group = NULL, matrixMethod) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            if (missing(W) & missing(h)) {
+                W <- diag(length(ncol(x)))
+            } else if (missing(W)) {
+                W <- diag(length(c(ncol(x), h)))
+            }
+            if (matrixMethod == "efficient" | matrixMethod == "princomp") {
+              weight.matrix <- weight.matrix(beta = beta, y = y, x = x, h = h, group = group, c = c, d = d, matrixMethod = matrixMethod)
+              fit1 <- optim(par = beta, fn = gmm, gr = grad, method = "BFGS", 
+                control = list(maxit = 500), y = y, x = x, h = h, group = group, 
+                c = c, d = d, W = weight.matrix)
+              newpar <- fit1$par
+              weight.matrix <- weight.matrix(beta = newpar, y = y, x = x, h = h, group = group, c = c, d = d, matrixMethod = matrixMethod)
+              fit2 <- optim(par = newpar, fn = gmm, gr = grad, method = "BFGS", 
+                control = list(maxit = 500), y = y, x = x, h = h, group = group, 
+                c = c, d = d, W = weight.matrix)
+              fit2             
+            } else {
+              fit <- optim(par = beta, fn = gmm.cue, method = "BFGS", 
+                control = list(maxit = 500), y = y, x = x, h = h, group = group, 
+                c = c, d = d, matrixMethod = matrixMethod)
+              fit
+            }
+        }
 
-        pllik <- llik
+        # vcov with auxiliary information
+        rr.true.vcov <- function(beta, y, x, w, c, d, h = NULL, group = NULL, matrixMethod) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            jbn <- jbn(beta, y, x, w, c, d)
+            group.labels <- names(h)
+            for (i in 1:length(group.labels)) {
+                wg <- w[group == group.labels[i]]
+                grad.iter <- t(w[group == group.labels[i]]) %*% (-c(dlogistic.coef(x[group == group.labels[i], , drop = FALSE] %*% beta)) * x[group == group.labels[i], , drop = FALSE])/sum(w)
+                jbn <- rbind(jbn, grad.iter)
+            }
+            weight.matrix <- weight.matrix(beta = beta, y = y, x = x, h = h, group = group, c = c, d = d, matrixMethod = matrixMethod)
+            if (matrixMethod != "princomp") {
+              solve(t(jbn) %*% weight.matrix %*% jbn)/(sum(w))
+            } else {
+              V <- solve(weight.matrix(beta = beta, y = y, x = x, h = h, group = group, c = c, d = d, matrixMethod = "efficient"))
+              solve(t(jbn) %*% weight.matrix %*% jbn) %*% t(jbn) %*% weight.matrix %*% V %*% t(weight.matrix) %*% jbn %*% solve(t(jbn) %*% weight.matrix %*% jbn)/sum(w)
+            }
+        }
 
-        if(verbose==T)
-            cat(paste(counter, round(llik, 4), "\n"))
 
-        ## calculate the new log likelihood with the parameters you just
-        ## estimated in the M step
-        llik <- obs.llik(par, y = y, x = x, c = c, d = d, gx = gx)
 
-        counter <- counter + 1
-
-        ## stop for obvious reasons
-        if (llik < pllik)
-            stop("log-likelihood is not monotonically increasing.")
-
-        if(counter == (maxIter-1))
-            warning("number of iterations exceeded maximum in ML")
-
-    } ## end of while loop
-    
-    # Rescale coefficients
-    bpar <- c(par/bscale)
-    
-        if(optim) {
-        MLEfit <- optim(par = par, fn = obs.llik, method = "BFGS",
-                        y = y, x = x,
-                        hessian = TRUE,
-                        control = list(maxit = 0, fnscale = -1),
-                        c = c, d = d)
-        vcov <- solve(-MLEfit$hessian, tol = solve.tolerance)
-        vcov <- vcov/(bscale %*% t(bscale))
-        
+        true.fit <- rr.true.coefs(beta = bpar, y = y, x = x1, c = c, d = d, h = h, group = group, matrixMethod = matrixMethod)
+        bpar <- true.fit$par
+        vcov <- rr.true.vcov(beta = bpar, y = y, x = x1, c = c, d = d, h = h, group = group, matrixMethod = matrixMethod)
         se <- sqrt(diag(vcov))
-    } else { 
-         score.rr <- as.vector(y * ( c * gx + d )^(-1) * c * gx * (1-gx)) * x +
-           as.vector((1-y) * ( 1 - c * gx - d )^(-1) * (-c) * gx * (1-gx)) * x
 
-         information.rr <- crossprod(score.rr) / nrow(x)
-         vcov <- solve(information.rr, tol = solve.tolerance) / nrow(x)
-         vcov <- vcov/(bscale %*% t(bscale))
-         
-         se <- sqrt(diag(vcov))
+        # Sargan-Hansen overidentification test
+        J.stat <- true.fit$val * n
+        overid.p <- round(1 - pchisq(J.stat, df = length(h)), 4)
+
     }
 
     return.object <- list(est = bpar, 
@@ -228,7 +406,8 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
                           x = x1, #unscaled data
                           y = y,
                           design = design,
-                          call = match.call())
+                          call = match.call(), 
+                          aux = aux.check)
 
     if(design == "forced-known") {
       return.object$p <- p
@@ -243,6 +422,14 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
     if(design == "unrelated-known") {
       return.object$p <- p
       return.object$q <- q
+    }
+
+    if (aux.check) {
+      return.object$nh <- length(h)
+      return.object$wm <- ifelse(matrixMethod == "cue", "continuously updating", 
+        ifelse(matrixMethod == "princomp", "principal components", "efficient"))
+      return.object$J.stat <- round(J.stat, 4)
+      return.object$overid.p <- overid.p
     }
     
     class(return.object) <- "rrreg"
@@ -573,6 +760,9 @@ print.rrreg <- function(x, ...){
 
   cat("\n")
 
+  if (x$aux) cat("Incorporating ", x$nh, " auxiliary moment(s). Weighting method: ", x$wm, ".\n", 
+    "The overidentification test statistic was: ", x$J.stat, " (p < ", x$overid.p, ")", ".\n", sep = "")
+
   invisible(x)
 
 }
@@ -599,6 +789,9 @@ print.summary.rrreg <- function(x, ...){
   summarize.design(x$design, x$p, x$p0, x$p1, x$q)
 
   cat("\n")
+
+  if (x$aux) cat("Incorporating ", x$nh, " auxiliary moment(s). Weighting method: ", x$wm, ".\n", 
+    "The overidentification test statistic was: ", x$J.stat, " (p < ", x$overid.p, ")", ".\n", sep = "")
 
   invisible(x)
 
