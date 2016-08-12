@@ -33,6 +33,19 @@ is assumed to be independent of covariates (Unrelated Question Design).}
 \item{start}{Optional starting values of coefficient estimates for the
 Expectation-Maximization (EM) algorithm.}
 
+\item{h}{Auxiliary data functionality. Optional named numeric vector with 
+length equal to number of groups. Names correspond to group labels and 
+values correspond to auxiliary moments.}
+
+\item{group}{Auxiliary data functionality. Optional character vector of 
+group labels with length equal to number of observations.}
+
+\item{matrixMethod}{Auxiliary data functionality. Procedure for estimating 
+optimal weighting matrix for generalized method of moments. One of 
+"efficient" for two-step feasible and "cue" for continuously updating. 
+Default is "efficient". Only relevant if \code{h} and \code{group} are 
+specified.}
+
 \item{maxIter}{Maximum number of iterations for the Expectation-Maximization
 algorithm. The default is \code{10000}.}
 
