@@ -11,7 +11,8 @@ Depends:
 Imports:
     MASS,
     arm,
-    coda
+    coda,
+    magic
 Description: Enables researchers to conduct multivariate statistical analyses
     of survey data with randomized response technique items from several designs,
     including mirrored question, forced question, and unrelated question. This

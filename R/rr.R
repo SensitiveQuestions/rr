@@ -12,9 +12,10 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #' the Maximum Likelihood (ML) estimation for the Expectation-Maximization (EM)
 #' algorithm.
 #' 
-#' @usage rrreg(formula, p, p0, p1, q, design, data, start = NULL, maxIter =
-#' 10000, verbose = FALSE, optim = FALSE, em.converge = 10^(-8), glmMaxIter =
-#' 10000, solve.tolerance = .Machine$double.eps)
+#' @usage rrreg(formula, p, p0, p1, q, design, data, start = NULL, 
+#' h = NULL, group = NULL, matrixMethod = "efficient",
+#' maxIter = 10000, verbose = FALSE, optim = FALSE, em.converge = 10^(-8), 
+#' glmMaxIter = 10000, solve.tolerance = .Machine$double.eps)
 #' @param formula An object of class "formula": a symbolic description of the
 #' model to be fitted.
 #' @param p The probability of receiving the sensitive question (Mirrored
@@ -31,6 +32,16 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #' @param data A data frame containing the variables in the model.
 #' @param start Optional starting values of coefficient estimates for the
 #' Expectation-Maximization (EM) algorithm.
+#' @param h Auxiliary data functionality. Optional named numeric vector with 
+#' length equal to number of groups. Names correspond to group labels and 
+#' values correspond to auxiliary moments.
+#' @param group Auxiliary data functionality. Optional character vector of 
+#' group labels with length equal to number of observations.
+#' @param matrixMethod Auxiliary data functionality. Procedure for estimating 
+#' optimal weighting matrix for generalized method of moments. One of 
+#' "efficient" for two-step feasible and "cue" for continuously updating. 
+#' Default is "efficient". Only relevant if \code{h} and \code{group} are 
+#' specified.
 #' @param maxIter Maximum number of iterations for the Expectation-Maximization
 #' algorithm. The default is \code{10000}.
 #' @param verbose A logical value indicating whether model diagnostics counting
@@ -90,7 +101,11 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #' ## Replicates Table 3 in Blair, Imai, and Zhou (2014)
 #' 
 #' @export
+#' 
+#' @importFrom magic adiag
+#' @importFrom stats pchisq
 rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL, 
+                  h = NULL, group = NULL, matrixMethod = "efficient", 
                   maxIter = 10000, verbose = FALSE, 
                   optim = FALSE, em.converge = 10^(-8), 
                   glmMaxIter = 10000, solve.tolerance = .Machine$double.eps) {
@@ -123,6 +138,15 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
         return(llik)
     }
     
+    # auxiliary data functionality -- check conditions
+    if (!is.null(h) & is.null(group)) {
+      stop("Need to specify character vector of group assignments. See documentation")
+    } else if (is.null(h) & !is.null(group)) {
+      stop("Need to specify named vector of group moments. See documentation")
+    } 
+
+    aux.check <- !(is.null(h) | is.null(group))    
+
     ## NOW THE ALGORITHM
 
     ## set some starting values
@@ -220,6 +244,167 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
          se <- sqrt(diag(vcov))
     }
 
+    # auxiliary data functionality  
+    if (aux.check) {     
+
+        dlogistic.coef <- function(x) exp(x) / (1 + exp(x))^2
+
+        score <- function (beta, y, x, w = NULL, c, d ) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            coef <- (c * y / (c * logistic(x %*% beta) + d) - 
+                c * (1 - y) / (1 - c * logistic(x %*% beta) - d)) * c(dlogistic.coef(x %*% beta))
+            w.coef <- c(coef) * w
+            colSums(w.coef * x)/sum(w)
+        }
+
+        jbn <- function (beta, y, x, w = NULL, c, d ) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            coef1 <- (y * c/(c * logistic(x %*% beta) + d) -
+                (1 - y) * c /(1 - c * logistic(x %*% beta) - d)) *
+                    exp(x %*% beta) * (1 - exp(2 * x %*% beta)) / (1 + exp(x %*% beta))^4
+            coef2 <- (y * c^2 / (c * logistic(x %*% beta) + d)^2 + 
+                (1 - y) * c^2/(1 - c * logistic(x %*% beta) - d)^2) *
+                    exp(2 * x %*% beta)/(1 + exp(x %*% beta))^4
+            t(w * c(coef1 - coef2) * x) %*% x / sum(w)
+        }
+
+        # gmm objective function
+        gmm <- function (beta, y, x, w = NULL, c, d, W = NULL, h, group) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            m1 <- score(beta, y, x, w, c, d)
+            g <- c()
+            group.labels <- names(h)
+            for (i in 1:length(h)){
+                wg <- w[group == group.labels[i]]
+                g[i] <- sum(c(h[i]) - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta))/sum(w)
+            }
+            if (missing(W)) W <- diag(length(c(m1, g)))
+            return(t(c(m1, g)) %*% W %*% c(m1, g))
+        }
+
+        # gmm gradient
+        grad <- function (beta, y, x, w = NULL, c, d , W = NULL, h, group) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            score <- score(beta, y, x, w, c, d)
+            jbn <- jbn(beta, y, x, w, c, d)
+            g <- c()
+            group.labels <- names(h)
+            for (i in 1:length(h)){
+                wg <- w[group == group.labels[i]]
+                g[i] <- sum(c(h[i]) - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta))/sum(w)
+                grad.iter <- colSums(-c(dlogistic.coef(x[group == group.labels[i], , drop = FALSE] %*% beta)) * x[group == group.labels[i], , drop = FALSE])/sum(w)
+                jbn <- rbind(jbn, grad.iter)
+            } 
+            if (missing(W)) W <- diag(length(c(score, g)))
+            t(2 * c(score, g)) %*% W %*% jbn
+        }
+
+        # gmm weighting matrix
+        weight.matrix <- function (beta, y, x, w = NULL, c, d, h, group, matrixMethod) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            coef <- (c * y / (c * logistic(x %*% beta) + d) - 
+                c * (1 - y) / (1 - c * logistic(x %*% beta) - d)) * c(dlogistic.coef(x %*% beta))
+            w.coef <- c(coef) * w
+            dg <- c()
+            group.labels <- names(h)
+            for (i in 1:length(group.labels)){
+                wg <- w[group == group.labels[i]]
+                dg[i] <- sum(c(h[i]) - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta)^2)/sum(w)
+            }
+            matrix1 <- t(w.coef * x) %*% (w.coef * x)/sum(w)
+            matrix2 <- diag(dg, nrow = length(dg))
+            efficient.W <- solve(adiag(matrix1, matrix2))
+            if (matrixMethod == "efficient" | matrixMethod == "cue") {
+              efficient.W
+            } else if (matrixMethod == "princomp") {
+              decomp <- eigen(efficient.W)
+              decomp$values * t(decomp$vectors) %*% decomp$vectors
+            }
+        }
+
+        # continuously updating objective function
+        gmm.cue <- function (beta, y, x, w = NULL, c, d, h, group, matrixMethod) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            m1 <- score(beta, y, x, w, c, d)
+            g <- c()
+            group.labels <- names(h)
+            for (i in 1:length(h)){
+                wg <- w[group == group.labels[i]]
+                g[i] <- sum(c(h[i]) - logistic(x[group == group.labels[i], , drop = FALSE] %*% beta))/sum(w)
+            }
+            W <- weight.matrix(beta = beta, y = y, x = x, w = w, c = c, d = d, 
+              h = h, group = group, matrixMethod = matrixMethod)
+            t(c(m1, g)) %*% W %*% c(m1, g)
+        }
+
+
+        # coefs with auxiliary information
+        rr.true.coefs <- function (beta, y, x, w = NULL, c, d , W = NULL, h = NULL, group = NULL, matrixMethod) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            if (missing(W) & missing(h)) {
+                W <- diag(length(ncol(x)))
+            } else if (missing(W)) {
+                W <- diag(length(c(ncol(x), h)))
+            }
+            if (matrixMethod == "efficient" | matrixMethod == "princomp") {
+              weight.matrix <- weight.matrix(beta = beta, y = y, x = x, h = h, group = group, c = c, d = d, matrixMethod = matrixMethod)
+              fit1 <- optim(par = beta, fn = gmm, gr = grad, method = "BFGS", 
+                control = list(maxit = 500), y = y, x = x, h = h, group = group, 
+                c = c, d = d, W = weight.matrix)
+              newpar <- fit1$par
+              weight.matrix <- weight.matrix(beta = newpar, y = y, x = x, h = h, group = group, c = c, d = d, matrixMethod = matrixMethod)
+              fit2 <- optim(par = newpar, fn = gmm, gr = grad, method = "BFGS", 
+                control = list(maxit = 500), y = y, x = x, h = h, group = group, 
+                c = c, d = d, W = weight.matrix)
+              fit2             
+            } else {
+              fit <- optim(par = beta, fn = gmm.cue, method = "BFGS", 
+                control = list(maxit = 500), y = y, x = x, h = h, group = group, 
+                c = c, d = d, matrixMethod = matrixMethod)
+              fit
+            }
+        }
+
+        # vcov with auxiliary information
+        rr.true.vcov <- function(beta, y, x, w, c, d, h = NULL, group = NULL, matrixMethod) {
+            n <- length(y)
+            if (missing(w)) w <- rep(1, n)
+            jbn <- jbn(beta, y, x, w, c, d)
+            group.labels <- names(h)
+            for (i in 1:length(group.labels)) {
+                wg <- w[group == group.labels[i]]
+                grad.iter <- t(w[group == group.labels[i]]) %*% (-c(dlogistic.coef(x[group == group.labels[i], , drop = FALSE] %*% beta)) * x[group == group.labels[i], , drop = FALSE])/sum(w)
+                jbn <- rbind(jbn, grad.iter)
+            }
+            weight.matrix <- weight.matrix(beta = beta, y = y, x = x, h = h, group = group, c = c, d = d, matrixMethod = matrixMethod)
+            if (matrixMethod != "princomp") {
+              solve(t(jbn) %*% weight.matrix %*% jbn)/(sum(w))
+            } else {
+              V <- solve(weight.matrix(beta = beta, y = y, x = x, h = h, group = group, c = c, d = d, matrixMethod = "efficient"))
+              solve(t(jbn) %*% weight.matrix %*% jbn) %*% t(jbn) %*% weight.matrix %*% V %*% t(weight.matrix) %*% jbn %*% solve(t(jbn) %*% weight.matrix %*% jbn)/sum(w)
+            }
+        }
+
+
+
+        true.fit <- rr.true.coefs(beta = bpar, y = y, x = x1, c = c, d = d, h = h, group = group, matrixMethod = matrixMethod)
+        bpar <- true.fit$par
+        vcov <- rr.true.vcov(beta = bpar, y = y, x = x1, c = c, d = d, h = h, group = group, matrixMethod = matrixMethod)
+        se <- sqrt(diag(vcov))
+
+        # Sargan-Hansen overidentification test
+        J.stat <- true.fit$val * n
+        overid.p <- round(1 - pchisq(J.stat, df = length(h)), 4)
+
+    }
+
     return.object <- list(est = bpar, 
                           vcov = vcov,
                           se = se,
@@ -245,6 +430,17 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
       return.object$q <- q
     }
     
+    # auxiliary data functionality -- set up return object
+    return.object$aux <- aux.check
+
+    if (aux.check) {
+      return.object$nh <- length(h)
+      return.object$wm <- ifelse(matrixMethod == "cue", "continuously updating", 
+        ifelse(matrixMethod == "princomp", "principal components", "efficient"))
+      return.object$J.stat <- round(J.stat, 4)
+      return.object$overid.p <- overid.p
+    }
+
     class(return.object) <- "rrreg"
 
     return(return.object)
@@ -445,7 +641,7 @@ coef.rrreg <- function(object, ...){
 #' 
 #' @importFrom MASS mvrnorm
 #' 
-#' @method predict rrreg 
+#' @export
 predict.rrreg <- function(object, given.y = FALSE, alpha = .05, 
                           n.sims = 1000, avg = FALSE, newdata = NULL, 
                           quasi.bayes = FALSE, keep.draws = FALSE, ...) {
@@ -545,11 +741,12 @@ predict.rrreg <- function(object, given.y = FALSE, alpha = .05,
   
 }
 
-
+#' @export
 summary.rrreg <- function(object, ...) {
   structure(object, class = c("summary.rrreg", class(object)))
 }
 
+#' @export
 print.rrreg <- function(x, ...){
 
   cat("\nRandomized Response Technique Regression \n\nCall: ")
@@ -573,10 +770,15 @@ print.rrreg <- function(x, ...){
 
   cat("\n")
 
+  # auxiliary data functionality -- print details
+  if (x$aux) cat("Incorporating ", x$nh, " auxiliary moment(s). Weighting method: ", x$wm, ".\n", 
+    "The overidentification test statistic was: ", x$J.stat, " (p < ", x$overid.p, ")", ".\n", sep = "")
+
   invisible(x)
 
 }
 
+#' @export
 print.summary.rrreg <- function(x, ...){
 
   cat("\nRandomized Response Technique Regression \n\nCall: ")
@@ -599,6 +801,10 @@ print.summary.rrreg <- function(x, ...){
   summarize.design(x$design, x$p, x$p0, x$p1, x$q)
 
   cat("\n")
+
+  # auxiliary data functionality -- print details
+  if (x$aux) cat("Incorporating ", x$nh, " auxiliary moment(s). Weighting method: ", x$wm, ".\n", 
+    "The overidentification test statistic was: ", x$J.stat, " (p < ", x$overid.p, ")", ".\n", sep = "")
 
   invisible(x)
 
