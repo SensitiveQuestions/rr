@@ -4,9 +4,10 @@
 \alias{rrreg}
 \title{Randomized Response Regression}
 \usage{
-rrreg(formula, p, p0, p1, q, design, data, start = NULL, maxIter =
-10000, verbose = FALSE, optim = FALSE, em.converge = 10^(-8), glmMaxIter =
-10000, solve.tolerance = .Machine$double.eps)
+rrreg(formula, p, p0, p1, q, design, data, start = NULL, 
+h = NULL, group = NULL, matrixMethod = "efficient",
+maxIter = 10000, verbose = FALSE, optim = FALSE, em.converge = 10^(-8), 
+glmMaxIter = 10000, solve.tolerance = .Machine$double.eps)
 }
 \arguments{
 \item{formula}{An object of class "formula": a symbolic description of the

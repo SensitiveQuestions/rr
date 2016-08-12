@@ -12,9 +12,10 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #' the Maximum Likelihood (ML) estimation for the Expectation-Maximization (EM)
 #' algorithm.
 #' 
-#' @usage rrreg(formula, p, p0, p1, q, design, data, start = NULL, maxIter =
-#' 10000, verbose = FALSE, optim = FALSE, em.converge = 10^(-8), glmMaxIter =
-#' 10000, solve.tolerance = .Machine$double.eps)
+#' @usage rrreg(formula, p, p0, p1, q, design, data, start = NULL, 
+#' h = NULL, group = NULL, matrixMethod = "efficient",
+#' maxIter = 10000, verbose = FALSE, optim = FALSE, em.converge = 10^(-8), 
+#' glmMaxIter = 10000, solve.tolerance = .Machine$double.eps)
 #' @param formula An object of class "formula": a symbolic description of the
 #' model to be fitted.
 #' @param p The probability of receiving the sensitive question (Mirrored
