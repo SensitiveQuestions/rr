@@ -144,6 +144,8 @@ rrreg <- function(formula, p, p0, p1, q, design, data, start = NULL,
       stop("Need to specify named vector of group moments. See documentation")
     } 
 
+    aux.check <- !(is.null(h) | is.null(group))    
+
     ## NOW THE ALGORITHM
 
     ## set some starting values
