@@ -1,10 +1,10 @@
 Package: rr
-Version: 1.3.1
-Date: 2016-5-13
+Version: 1.4
+Date: 2016-8-15
 Title: Statistical Methods for the Randomized Response Technique
-Author: Graeme Blair <graeme.blair@columbia.edu>, Yang-Yang Zhou
-    <yz3@princeton.edu>, Kosuke Imai <kimai@princeton.edu>
-Maintainer: Graeme Blair <graeme.blair@columbia.edu>
+Author: Graeme Blair [aut, cre], Yang-Yang Zhou [aut, cre], 
+    Kosuke Imai [aut, cre], Winston Chou [ctb]
+Maintainer: Graeme Blair <graeme.blair@ucla.edu>
 Depends:
     R (>= 3.0.0),
     utils
@@ -20,8 +20,9 @@ Description: Enables researchers to conduct multivariate statistical analyses
     regression with the randomized response item as a predictor. In addition,
     tools for conducting power analysis for designing randomized response items
     are included. The package implements methods described in Blair, Imai, and Zhou
-    (2015) ''Design and Analysis of the Randomized Response Technique,'' Working
-    paper available at <http://graemeblair.com/papers/randresp.pdf>.
+    (2015) ''Design and Analysis of the Randomized Response Technique,'' Journal
+    of the American Statistical Association 
+    <http://graemeblair.com/papers/randresp.pdf>.
 LazyLoad: yes
 LazyData: yes
 License: GPL (>= 3)

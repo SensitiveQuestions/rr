@@ -4,7 +4,7 @@
 \alias{predict.rrreg}
 \title{Predicted Probabilities for Randomized Response Regression}
 \usage{
-predict.rrreg(object, given.y = FALSE, alpha = .05, n.sims =
+\method{predict}{rrreg}(object, given.y = FALSE, alpha = .05, n.sims =
 1000, avg = FALSE, newdata = NULL, quasi.bayes = FALSE, keep.draws = FALSE,
 ...)
 }
