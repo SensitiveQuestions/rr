@@ -4,10 +4,10 @@
 \alias{power.rr.test}
 \title{Power Analysis for Randomized Response}
 \usage{
-power.rr.test(p, p0, p1, q, design, n = NULL, r, presp, presp.null =
-NULL, sig.level, prespT, prespC, prespT.null = NULL, prespC.null, power =
-NULL, type = c("one.sample", "two.sample"), alternative = c("one.sided",
-"two.sided"), solve.tolerance = .Machine$double.eps)
+power.rr.test(p, p0, p1, q, design, n = NULL, r, presp, presp.null = NULL,
+  sig.level, prespT, prespC, prespT.null = NULL, prespC.null, power = NULL,
+  type = c("one.sample", "two.sample"), alternative = c("one.sided",
+  "two.sided"), solve.tolerance = .Machine$double.eps)
 }
 \arguments{
 \item{p}{The probability of receiving the sensitive question (Mirrored
@@ -106,6 +106,7 @@ survey designs, both for the standard designs ("forced-known", "mirrored",
 \examples{
 
 
+
 ## Calculate the power to detect a sensitive item proportion of .2
 ## with the forced design with known probabilities of 2/3 in truth-telling group,
 ## 1/6 forced to say "yes" and 1/6 forced to say "no" and sample size of 200.
@@ -137,13 +138,13 @@ for(n in n.seq) {
 ## Replicates the results for Figure 2 in Blair, Imai, and Zhou (2014)
 }
 
+
 }
 \references{
 Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2015) "Design
-and Analysis of the Randomized Response Technique."  \emph{Journal of the 
-American Statistical Association.}
-Available at \url{http://graemeblair.com/papers/randresp.pdf}.
+and Analysis of the Randomized Response Technique."  \emph{Journal of the
+American Statistical Association.} Available at
+\url{http://graemeblair.com/papers/randresp.pdf}.
 }
 \keyword{analysis}
 \keyword{power}
-

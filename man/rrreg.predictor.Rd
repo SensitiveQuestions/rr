@@ -5,10 +5,11 @@
 \title{Randomized Response as a Regression Predictor}
 \usage{
 rrreg.predictor(formula, p, p0, p1, q, design, data, rr.item,
-model.outcome = "logistic", fit.sens = "bayesglm", fit.outcome = "bayesglm",
-bstart = NULL, tstart = NULL, parstart = TRUE, maxIter = 10000, verbose =
-FALSE, optim = FALSE, em.converge = 10^(-4), glmMaxIter = 20000, estconv =
-TRUE, solve.tolerance = .Machine$double.eps)
+  model.outcome = "logistic", fit.sens = "bayesglm",
+  fit.outcome = "bayesglm", bstart = NULL, tstart = NULL,
+  parstart = TRUE, maxIter = 10000, verbose = FALSE, optim = FALSE,
+  em.converge = 10^(-4), glmMaxIter = 20000, estconv = TRUE,
+  solve.tolerance = .Machine$double.eps)
 }
 \arguments{
 \item{formula}{An object of class "formula": a symbolic description of the
@@ -128,6 +129,7 @@ question, forced response, disguised response, and unrelated question.
 }
 \examples{
 
+
 data(nigeria)
 
 ## Define design parameters
@@ -152,6 +154,7 @@ summary(rr.q1.pred.obj)
 }
 ## Replicates Table 4 in Blair, Imai, and Zhou (2014)
 
+
 }
 \references{
 Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design
@@ -165,4 +168,3 @@ Available at \url{http://imai.princeton.edu/research/randresp.html}.
 \keyword{model}
 \keyword{predictor}
 \keyword{regression}
-
