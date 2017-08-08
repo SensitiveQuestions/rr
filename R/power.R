@@ -8,10 +8,6 @@
 #' "disguised", "unrelated-known") and modified designs ("forced-unknown", and
 #' "unrelated -unknown").
 #' 
-#' @usage power.rr.test(p, p0, p1, q, design, n = NULL, r, presp, presp.null =
-#' NULL, sig.level, prespT, prespC, prespT.null = NULL, prespC.null, power =
-#' NULL, type = c("one.sample", "two.sample"), alternative = c("one.sided",
-#' "two.sided"), solve.tolerance = .Machine$double.eps)
 #' @param p The probability of receiving the sensitive question (Mirrored
 #' Question Design, Unrelated Question Design); the probability of answering
 #' truthfully (Forced Response Design); the probability of selecting a red card
@@ -76,11 +72,12 @@
 #' \item{type}{One or two sample test.} \item{alternative}{One or two sided
 #' test.}
 #' @references Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2015) "Design
-#' and Analysis of the Randomized Response Technique."  \emph{Journal of the 
-#' American Statistical Association.}
-#' Available at \url{http://graemeblair.com/papers/randresp.pdf}.
-#' @keywords power analysis
+#' and Analysis of the Randomized Response Technique."  \emph{Journal of the
+#' American Statistical Association.} Available at
+#' \url{http://graemeblair.com/papers/randresp.pdf}.
+#' @keywords analysis power
 #' @examples
+#' 
 #' 
 #' 
 #' ## Calculate the power to detect a sensitive item proportion of .2
@@ -114,7 +111,8 @@
 #' ## Replicates the results for Figure 2 in Blair, Imai, and Zhou (2014)
 #' }
 #' 
-#' @export
+#' 
+#' @export power.rr.test
 power.rr.test <- function(p, p0, p1, q, design, n = NULL, r, presp, presp.null = NULL, sig.level, 
                           prespT, prespC, prespT.null = NULL, prespC.null,
                           power = NULL, type = c("one.sample", "two.sample"), 
@@ -502,6 +500,8 @@ se.f.rr <- function(p, p0, p1, q, design, n, r, presp){
 
 
 
+
+
 #' Power Analysis Plot for Randomized Response
 #' 
 #' \code{power.rr.plot} generates a power analysis plot for randomized response
@@ -514,11 +514,6 @@ se.f.rr <- function(p, p0, p1, q, design, n, r, presp){
 #' sensitive trait; the y-axis shows the statistical power; and different
 #' sample sizes are shown as different lines in grayscale.
 #' 
-#' @usage power.rr.plot(p, p0, p1, q, design, n.seq, r, presp.seq, presp.null =
-#' NULL, sig.level, prespT.seq, prespC.seq, prespT.null = NULL, prespC.null,
-#' type = c("one.sample", "two.sample"), alternative = c("one.sided",
-#' "two.sided"), solve.tolerance = .Machine$double.eps, legend = TRUE, legend.x
-#' = "bottomright", legend.y, par = TRUE, ...)
 #' @param p The probability of receiving the sensitive question (Mirrored
 #' Question Design, Unrelated Question Design); the probability of answering
 #' truthfully (Forced Response Design); the probability of selecting a red card
@@ -575,8 +570,9 @@ se.f.rr <- function(p, p0, p1, q, design, n, r, presp){
 #' @references Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design
 #' and Analysis of the Randomized Response Technique."  \emph{Working Paper.}
 #' Available at \url{http://imai.princeton.edu/research/randresp.html}.
-#' @keywords power analysis
+#' @keywords analysis power
 #' @examples
+#' 
 #' 
 #' ## Generate a power plot for the forced design with known 
 #' ## probabilities of 2/3 in truth-telling group, 1/6 forced to say "yes" 
@@ -596,8 +592,8 @@ se.f.rr <- function(p, p0, p1, q, design, n, r, presp){
 #'     
 #' ## Replicates the results for Figure 2 in Blair, Imai, and Zhou (2014)
 #' 
-#' @importFrom grDevices gray
-#' @export
+#' 
+#' @export power.rr.plot
 power.rr.plot <- function(p, p0, p1, q, design, n.seq, r, presp.seq, presp.null = NULL, sig.level, 
                           prespT.seq, prespC.seq, prespT.null = NULL, prespC.null,
                           type = c("one.sample", "two.sample"), 
