@@ -28,3 +28,11 @@ export(summary.rrreg.predictor)
 importFrom(coda,as.mcmc)
 importFrom(coda,as.mcmc.list)
 importFrom(coda,gelman.diag)
+
+importFrom("grDevices", "gray")
+importFrom("graphics", "abline", "axis", "lines", "mtext", "plot")
+importFrom("stats", "as.formula", "binomial", "coef", "complete.cases",
+           "cov", "dcauchy", "df", "glm", "glm.control", "model.frame",
+           "model.matrix", "model.matrix.default", "model.response",
+           "na.omit", "pchisq", "pnorm", "qnorm", "quantile", "rnorm",
+           "runif", "sd", "vcov")
