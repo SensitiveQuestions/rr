@@ -2,9 +2,10 @@ Package: rr
 Version: 1.4
 Date: 2016-8-15
 Title: Statistical Methods for the Randomized Response Technique
-Author: Graeme Blair [aut, cre], Yang-Yang Zhou [aut, cre], 
-    Kosuke Imai [aut, cre], Winston Chou [ctb]
-Maintainer: Graeme Blair <graeme.blair@ucla.edu>
+Authors@R: c(person("Graeme", "Blair", email = "graeme.blair@ucla.edu", role = c("aut", "cre")),
+             person("Yang-Yang", "Zhou", email = "yz3@princeton.edu", role = c("aut")),
+             person("Kosuke", "Imai", email = "kimai@princeton.edu", role = c("aut")),
+             person("Winston", "Chou", email = "macartan@gmail.com", role = c("ctb")))
 Depends:
     R (>= 3.0.0),
     utils
