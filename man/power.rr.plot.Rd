@@ -126,4 +126,3 @@ Available at \url{http://imai.princeton.edu/research/randresp.html}.
 }
 \keyword{analysis}
 \keyword{power}
-

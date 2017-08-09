@@ -146,4 +146,3 @@ Available at \url{http://graemeblair.com/papers/randresp.pdf}.
 }
 \keyword{analysis}
 \keyword{power}
-

@@ -177,4 +177,3 @@ Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design
 and Analysis of the Randomized Response Technique."  \emph{Working Paper.}
 Available at \url{http://imai.princeton.edu/research/randresp.html}.
 }
-

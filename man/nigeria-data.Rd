@@ -43,4 +43,3 @@ of the Randomized Response Technique."  \emph{Working Paper.} Available at
 \url{http://imai.princeton.edu/research/randresp.html}.
 }
 \keyword{dataset}
-
