@@ -599,7 +599,6 @@ print.summary.rrreg.predictor <- function(x, ...){
 #' 
 #' }
 #' 
-#' @method predict rrreg.predictor
 predict.rrreg.predictor <- function(object, fix.z = NULL, alpha = .05, n.sims = 1000, 
                            avg = FALSE, newdata = NULL, quasi.bayes = FALSE, keep.draws = FALSE, ...) {
   

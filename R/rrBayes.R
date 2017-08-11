@@ -490,7 +490,6 @@ vcov.rrreg.bayes.list <- function(object, ...) {
 }
 
 #' @export
-#' @method print rrreg.bayes
 print.rrreg.bayes <- print.rrreg.bayes.list <- function(x, ...) {
   
   cat("\nRandomized Response Technique Bayesian Regression \n\nCall: ")
@@ -554,7 +553,6 @@ summary.rrreg.bayes <- function(object, ...) {
 }
 
 #' @export
-#' @method print summary.rrreg.bayes
 print.summary.rrreg.bayes <- function(x, ...) {
   
   cat("\nRandomized Response Bayesian Regression \n\nCall: ")
