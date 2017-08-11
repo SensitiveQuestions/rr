@@ -2,8 +2,8 @@
 % Please edit documentation in R/rr-package.R
 \docType{package}
 \name{rr-package}
-\alias{rr}
 \alias{rr-package}
+\alias{rr}
 \title{R Package for the Randomized Response Technique}
 \description{
 \code{rr} implements methods developed by Blair, Imai, and Zhou (2015) such
@@ -27,6 +27,12 @@ distribution to the unrelated question under the unrelated question design.
 \tabular{ll}{ Package: \tab rr\cr Type: \tab Package\cr Version: \tab 1.2\cr
 Date: \tab 2015-3-8\cr License: \tab GPL (>= 2)\cr }
 }
+\references{
+Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2015) "Design
+and Analysis of the Randomized Response Technique."  
+\emph{Journal of the American Statistical Association.}
+Available at \url{http://graemeblair.com/papers/randresp.pdf}.
+}
 \author{
 Graeme Blair, Experiments in Governance and Politics, Columbia
 University \email{graeme.blair@columbia.edu}, \url{http://graemeblair.com}
@@ -39,11 +45,4 @@ Yang-Yang Zhou, Department of Politics, Princeton University
 
 Maintainer: Graeme Blair <graeme.blair@columbia.edu>
 }
-\references{
-Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2015) "Design
-and Analysis of the Randomized Response Technique."  
-\emph{Journal of the American Statistical Association.}
-Available at \url{http://graemeblair.com/papers/randresp.pdf}.
-}
 \keyword{package}
-

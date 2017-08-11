@@ -121,4 +121,3 @@ predicted probabilities.
 \keyword{predicted}
 \keyword{probabilities}
 \keyword{values}
-

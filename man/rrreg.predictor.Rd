@@ -165,4 +165,3 @@ Available at \url{http://imai.princeton.edu/research/randresp.html}.
 \keyword{model}
 \keyword{predictor}
 \keyword{regression}
-

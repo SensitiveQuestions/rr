@@ -113,4 +113,3 @@ order to generate predicted probabilities for the randomized response item.
 \keyword{predicted}
 \keyword{probabilities}
 \keyword{values}
-

@@ -130,4 +130,3 @@ at \url{http://imai.princeton.edu/research/randresp.html}.
 \code{\link{predict.rrreg}} for predicted probabilities.
 }
 \keyword{regression}
-
