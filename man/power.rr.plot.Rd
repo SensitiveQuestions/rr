@@ -4,11 +4,11 @@
 \alias{power.rr.plot}
 \title{Power Analysis Plot for Randomized Response}
 \usage{
-power.rr.plot(p, p0, p1, q, design, n.seq, r, presp.seq, presp.null = NULL,
-  sig.level, prespT.seq, prespC.seq, prespT.null = NULL, prespC.null,
-  type = c("one.sample", "two.sample"), alternative = c("one.sided",
-  "two.sided"), solve.tolerance = .Machine$double.eps, legend = TRUE,
-  legend.x = "bottomright", legend.y, par = TRUE, ...)
+power.rr.plot(p, p0, p1, q, design, n.seq, r, presp.seq, presp.null =
+NULL, sig.level, prespT.seq, prespC.seq, prespT.null = NULL, prespC.null,
+type = c("one.sample", "two.sample"), alternative = c("one.sided",
+"two.sided"), solve.tolerance = .Machine$double.eps, legend = TRUE, legend.x
+= "bottomright", legend.y, par = TRUE, ...)
 }
 \arguments{
 \item{p}{The probability of receiving the sensitive question (Mirrored
@@ -100,7 +100,6 @@ sample sizes are shown as different lines in grayscale.
 }
 \examples{
 
-
 ## Generate a power plot for the forced design with known 
 ## probabilities of 2/3 in truth-telling group, 1/6 forced to say "yes" 
 ## and 1/6 forced to say "no", varying the number of respondents from 
@@ -119,7 +118,6 @@ power.rr.plot(p = 2/3, p1 = 1/6, p0 = 1/6, n.seq = n.seq,
     
 ## Replicates the results for Figure 2 in Blair, Imai, and Zhou (2014)
 
-
 }
 \references{
 Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design
@@ -128,3 +126,4 @@ Available at \url{http://imai.princeton.edu/research/randresp.html}.
 }
 \keyword{analysis}
 \keyword{power}
+

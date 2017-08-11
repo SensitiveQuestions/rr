@@ -4,9 +4,10 @@
 \alias{rrreg.bayes}
 \title{Bayesian Randomized Response Regression}
 \usage{
-rrreg.bayes(formula, p, p0, p1, design, data, group.mixed, formula.mixed = ~1,
-  verbose = FALSE, n.draws = 10000, burnin = 5000, thin = 1, beta.start,
-  beta.mu0, beta.A0, beta.tune, Psi.start, Psi.df, Psi.scale, Psi.tune)
+rrreg.bayes(formula, p, p0, p1, design, data, group.mixed,
+formula.mixed = ~1, verbose = FALSE, n.draws = 10000, burnin = 5000, thin =
+1, beta.start, beta.mu0, beta.A0, beta.tune, Psi.start, Psi.df, Psi.scale,
+Psi.tune)
 }
 \arguments{
 \item{formula}{An object of class "formula": a symbolic description of the
@@ -83,9 +84,9 @@ data frame.} \item{x}{The model matrix of covariates.} \item{y}{The
 randomized response vector.} \item{design}{Call of standard design used:
 "forced-known", "mirrored", "disguised", or "unrelated-known".} \item{p}{The
 \code{p} argument.} \item{p0}{The \code{p0} argument.} \item{p1}{The
-\code{p1} argument.} \item{beta.tune}{The \code{beta.tune} argument.}
-\item{mixed}{Indicator for whether a mixed effects model was run.}
-\item{call}{the matched call.}
+\code{p1} argument.} \item{beta.tune}{The \code{beta.tune} argument.} 
+\item{mixed}{Indicator for whether a mixed effects
+model was run.} \item{call}{the matched call.}
 
 If a mixed-effects model is used, then several additional objects are
 included: \item{Psi}{The coefficients for the group-level fit. An object of
@@ -94,8 +95,7 @@ class "mcmc" that can be analyzed using the \code{coda} package.}
 can be analyzed using the \code{coda} package.}
 \item{coef.names.mixed}{Variable names for the predictors for the
 second-level model} \item{z}{The predictors for the second-level model.}
-\item{groups}{A vector of group indicators.} \item{Psi.tune}{The
-\code{Psi.tune} argument.}
+\item{groups}{A vector of group indicators.} \item{Psi.tune}{The \code{Psi.tune} argument.}
 }
 \description{
 Function to conduct multivariate regression analyses of survey data with the
@@ -124,7 +124,6 @@ If the G-R statistics are all below 1.1, the model is said to have
 converged.
 }
 \examples{
-
  
 data(nigeria)
  
@@ -172,10 +171,10 @@ bayes <- as.list(bayes.1, bayes.2, bayes.3)
 summary(bayes)
 }
 
-
 }
 \references{
 Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design
 and Analysis of the Randomized Response Technique."  \emph{Working Paper.}
 Available at \url{http://imai.princeton.edu/research/randresp.html}.
 }
+
