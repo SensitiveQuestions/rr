@@ -1,4 +1,5 @@
-# rr
+# Methods for analysing randomized response technique survey questions
+
 [![Travis-CI Build Status](https://travis-ci.org/SensitiveQuestions/rr.svg?branch=master)](https://travis-ci.org/SensitiveQuestions/rr) [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/rr)](https://cran.r-project.org/package=rr) [![CRAN downloads](https://cranlogs.r-pkg.org/badges/grand-total/rr)
 
-R package rr
+Enables researchers to conduct multivariate statistical analyses of survey data with randomized response technique items from several designs, including mirrored question, forced question, and unrelated question. This includes regression with the randomized response as the outcome and logistic regression with the randomized response item as a predictor. In addition, tools for conducting power analysis for designing randomized response items are included. The package implements methods described in Blair, Imai, and Zhou (2015) ''Design and Analysis of the Randomized Response Technique,'' Journal of the American Statistical Association  <http://graemeblair.com/papers/randresp.pdf>.

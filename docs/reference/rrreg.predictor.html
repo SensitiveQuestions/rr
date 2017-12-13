@@ -23,7 +23,8 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
+  
+  
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -267,7 +268,7 @@ question, forced response, disguised response, and unrelated question.</p>
 
     <p>Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design
 and Analysis of the Randomized Response Technique."  <em>Working Paper.</em>
-Available at <a href = 'http://imai.princeton.edu/research/randresp.html'>http://imai.princeton.edu/research/randresp.html</a>.</p>
+Available at <a href='http://imai.princeton.edu/research/randresp.html'>http://imai.princeton.edu/research/randresp.html</a>.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -287,18 +288,18 @@ Available at <a href = 'http://imai.princeton.edu/research/randresp.html'>http:/
 <span class='no'>p0</span> <span class='kw'>&lt;-</span> <span class='fl'>1</span>/<span class='fl'>6</span> <span class='co'># probability of forced 'no'</span>
 
 <span class='co'>## Fit joint model of responses to an outcome regression of joining a civic </span>
-<span class='co'>## group and the randomized response item of having a militant social connection</span>
-<span class='fu'>not_run</span>({
-  <span class='no'>rr.q1.pred.obj</span> <span class='kw'>&lt;-</span>
-      <span class='fu'>rrreg.predictor</span>(<span class='no'>civic</span> ~ <span class='no'>cov.asset.index</span> + <span class='no'>cov.married</span> + <span class='fu'>I</span>(<span class='no'>cov.age</span>/<span class='fl'>10</span>) +
-                <span class='fu'>I</span>((<span class='no'>cov.age</span>/<span class='fl'>10</span>)^<span class='fl'>2</span>) + <span class='no'>cov.education</span> + <span class='no'>cov.female</span>
-                + <span class='no'>rr.q1</span>, <span class='kw'>rr.item</span> <span class='kw'>=</span> <span class='st'>"rr.q1"</span>, <span class='kw'>parstart</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>estconv</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-                <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>nigeria</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>optim</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
-                <span class='kw'>p</span> <span class='kw'>=</span> <span class='no'>p</span>, <span class='kw'>p1</span> <span class='kw'>=</span> <span class='no'>p1</span>, <span class='kw'>p0</span> <span class='kw'>=</span> <span class='no'>p0</span>, <span class='kw'>design</span> <span class='kw'>=</span> <span class='st'>"forced-known"</span>)
+<span class='co'>## group and the randomized response item of having a militant social connection</span></div><span class='co'># NOT RUN {</span>
+<span class='no'>rr.q1.pred.obj</span> <span class='kw'>&lt;-</span>
+    <span class='fu'>rrreg.predictor</span>(<span class='no'>civic</span> ~ <span class='no'>cov.asset.index</span> + <span class='no'>cov.married</span> + <span class='fu'>I</span>(<span class='no'>cov.age</span>/<span class='fl'>10</span>) +
+              <span class='fu'>I</span>((<span class='no'>cov.age</span>/<span class='fl'>10</span>)^<span class='fl'>2</span>) + <span class='no'>cov.education</span> + <span class='no'>cov.female</span>
+              + <span class='no'>rr.q1</span>, <span class='kw'>rr.item</span> <span class='kw'>=</span> <span class='st'>"rr.q1"</span>, <span class='kw'>parstart</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>estconv</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+              <span class='kw'>data</span> <span class='kw'>=</span> <span class='no'>nigeria</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>optim</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
+              <span class='kw'>p</span> <span class='kw'>=</span> <span class='no'>p</span>, <span class='kw'>p1</span> <span class='kw'>=</span> <span class='no'>p1</span>, <span class='kw'>p0</span> <span class='kw'>=</span> <span class='no'>p0</span>, <span class='kw'>design</span> <span class='kw'>=</span> <span class='st'>"forced-known"</span>)
 
-  <span class='fu'>summary</span>(<span class='no'>rr.q1.pred.obj</span>)
-})
-<span class='co'>## Replicates Table 4 in Blair, Imai, and Zhou (2014)</span></div></pre>
+<span class='fu'>summary</span>(<span class='no'>rr.q1.pred.obj</span>)
+<span class='co'># }</span><div class='input'>## Replicates Table 4 in Blair, Imai, and Zhou (2014)
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

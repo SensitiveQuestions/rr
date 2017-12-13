@@ -23,7 +23,8 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-
+  
+  
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 
@@ -239,7 +240,7 @@ survey designs, both for the standard designs ("forced-known", "mirrored",
     <p>Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2015) "Design
 and Analysis of the Randomized Response Technique."  <em>Journal of the 
 American Statistical Association.</em>
-Available at <a href = 'http://graemeblair.com/papers/randresp.pdf'>http://graemeblair.com/papers/randresp.pdf</a>.</p>
+Available at <a href='http://graemeblair.com/papers/randresp.pdf'>http://graemeblair.com/papers/randresp.pdf</a>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -278,28 +279,28 @@ Available at <a href = 'http://graemeblair.com/papers/randresp.pdf'>http://graem
 #&gt; 
 #&gt; $alternative
 #&gt; [1] "one.sided"
-#&gt; </div><div class='input'>
-<span class='fu'>not_run</span>({
+#&gt; </div><div class='input'>				       
+</div><span class='co'># NOT RUN {</span>
+<span class='co'>## Find power varying the number of respondents from 250 to 2500 and </span>
+<span class='co'>## the population proportion of respondents possessing the sensitive </span>
+<span class='co'>## trait from 0 to .15</span>
 
-  <span class='co'>## Find power varying the number of respondents from 250 to 2500 and </span>
-  <span class='co'>## the population proportion of respondents possessing the sensitive </span>
-  <span class='co'>## trait from 0 to .15</span>
+<span class='no'>presp.seq</span> <span class='kw'>&lt;-</span> <span class='fu'>seq</span>(<span class='kw'>from</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fl'>.15</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fl'>.0025</span>)
+<span class='no'>n.seq</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fl'>250</span>, <span class='fl'>500</span>, <span class='fl'>1000</span>, <span class='fl'>2000</span>, <span class='fl'>2500</span>)
+<span class='no'>power</span> <span class='kw'>&lt;-</span> <span class='fu'>list</span>()
+<span class='kw'>for</span>(<span class='no'>n</span> <span class='kw'>in</span> <span class='no'>n.seq</span>) {
+    <span class='no'>power</span><span class='kw'>[[</span><span class='no'>n</span>]] <span class='kw'>&lt;-</span> <span class='fu'>rep</span>(<span class='fl'>NA</span>, <span class='fu'>length</span>(<span class='no'>presp.seq</span>))
+    <span class='kw'>for</span>(<span class='no'>i</span> <span class='kw'>in</span> <span class='fl'>1</span>:<span class='fu'>length</span>(<span class='no'>presp.seq</span>))
+        <span class='no'>power</span><span class='kw'>[[</span><span class='no'>n</span>]][<span class='no'>i</span>] <span class='kw'>&lt;-</span> <span class='fu'>power.rr.test</span>(<span class='kw'>p</span> <span class='kw'>=</span> <span class='fl'>2</span>/<span class='fl'>3</span>, <span class='kw'>p1</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>6</span>, <span class='kw'>p0</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>6</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='no'>n</span>,
+                                       <span class='kw'>presp</span> <span class='kw'>=</span> <span class='no'>presp.seq</span>[<span class='no'>i</span>], <span class='kw'>presp.null</span> <span class='kw'>=</span> <span class='fl'>0</span>,
+                                       <span class='kw'>design</span> <span class='kw'>=</span> <span class='st'>"forced-known"</span>, <span class='kw'>sig.level</span> <span class='kw'>=</span> <span class='fl'>.01</span>,
+                                       <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"one.sample"</span>,
+                                       <span class='kw'>alternative</span> <span class='kw'>=</span> <span class='st'>"one.sided"</span>)$<span class='no'>power</span>
+    }
 
-  <span class='no'>presp.seq</span> <span class='kw'>&lt;-</span> <span class='fu'>seq</span>(<span class='kw'>from</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fl'>.15</span>, <span class='kw'>by</span> <span class='kw'>=</span> <span class='fl'>.0025</span>)
-  <span class='no'>n.seq</span> <span class='kw'>&lt;-</span> <span class='fu'>c</span>(<span class='fl'>250</span>, <span class='fl'>500</span>, <span class='fl'>1000</span>, <span class='fl'>2000</span>, <span class='fl'>2500</span>)
-  <span class='no'>power</span> <span class='kw'>&lt;-</span> <span class='fu'>list</span>()
-  <span class='kw'>for</span>(<span class='no'>n</span> <span class='kw'>in</span> <span class='no'>n.seq</span>) {
-      <span class='no'>power</span><span class='kw'>[[</span><span class='no'>n</span>]] <span class='kw'>&lt;-</span> <span class='fu'>rep</span>(<span class='fl'>NA</span>, <span class='fu'>length</span>(<span class='no'>presp.seq</span>))
-      <span class='kw'>for</span>(<span class='no'>i</span> <span class='kw'>in</span> <span class='fl'>1</span>:<span class='fu'>length</span>(<span class='no'>presp.seq</span>))
-          <span class='no'>power</span><span class='kw'>[[</span><span class='no'>n</span>]][<span class='no'>i</span>] <span class='kw'>&lt;-</span> <span class='fu'>power.rr.test</span>(<span class='kw'>p</span> <span class='kw'>=</span> <span class='fl'>2</span>/<span class='fl'>3</span>, <span class='kw'>p1</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>6</span>, <span class='kw'>p0</span> <span class='kw'>=</span> <span class='fl'>1</span>/<span class='fl'>6</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='no'>n</span>,
-                                         <span class='kw'>presp</span> <span class='kw'>=</span> <span class='no'>presp.seq</span>[<span class='no'>i</span>], <span class='kw'>presp.null</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-                                         <span class='kw'>design</span> <span class='kw'>=</span> <span class='st'>"forced-known"</span>, <span class='kw'>sig.level</span> <span class='kw'>=</span> <span class='fl'>.01</span>,
-                                         <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"one.sample"</span>,
-                                         <span class='kw'>alternative</span> <span class='kw'>=</span> <span class='st'>"one.sided"</span>)$<span class='no'>power</span>
-      }
-
-  <span class='co'>## Replicates the results for Figure 2 in Blair, Imai, and Zhou (2014)</span>
-})</div></pre>
+<span class='co'>## Replicates the results for Figure 2 in Blair, Imai, and Zhou (2014)</span>
+<span class='co'># }</span><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
