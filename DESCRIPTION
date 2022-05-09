@@ -1,6 +1,5 @@
 Package: rr
 Version: 1.5.1
-Date: 2017-8-11
 Title: Statistical Methods for the Randomized Response Technique
 Authors@R: c(person("Graeme", "Blair", email = "graeme.blair@gmail.com", role = c("aut", "cre")),
              person("Yang-Yang", "Zhou", email = "yangyang.zhou@ubc.ca", role = c("aut")),
@@ -23,7 +22,7 @@ Description: Enables researchers to conduct multivariate statistical analyses
     are included. The package implements methods described in Blair, Imai, and Zhou
     (2015) ''Design and Analysis of the Randomized Response Technique,'' Journal
     of the American Statistical Association 
-    <http://graemeblair.com/papers/randresp.pdf>.
+    <https://graemeblair.com/papers/randresp.pdf>.
 LazyLoad: yes
 LazyData: yes
 License: GPL (>= 3)

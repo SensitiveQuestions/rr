@@ -25,19 +25,19 @@
 #' @aliases rr-package rr
 #' @docType package
 #' @author Graeme Blair, Experiments in Governance and Politics, Columbia
-#' University \email{graeme.blair@@columbia.edu}, \url{http://graemeblair.com}
+#' University \email{graeme.blair@@gmail.com}, \url{http://graemeblair.com}
 #' 
-#' Kosuke Imai, Department of Politics, Princeton University
-#' \email{kimai@@princeton.edu}, \url{http://imai.princeton.edu}
+#' Kosuke Imai, Departments of Government and Statistics, Harvard University
+#' \email{kimai@@harvard.edu}, \url{http://imai.princeton.edu}
 #' 
-#' Yang-Yang Zhou, Department of Politics, Princeton University
-#' \email{yz3@@princeton.edu}, \url{http://yangyangzhou.com}
+#' Yang-Yang Zhou, Department of Politics, University of British Columbia
+#' \email{yangyang.zhou@@ubc.ca}, \url{http://yangyangzhou.com}
 #' 
-#' Maintainer: Graeme Blair <graeme.blair@@columbia.edu>
+#' Maintainer: Graeme Blair <graeme.blair@@gmail.com>
 #' @references Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2015) "Design
 #' and Analysis of the Randomized Response Technique."  
 #' \emph{Journal of the American Statistical Association.}
-#' Available at \url{http://graemeblair.com/papers/randresp.pdf}.
+#' Available at \url{https://graemeblair.com/papers/randresp.pdf}.
 #' @keywords package
 #' @importFrom graphics abline axis lines mtext plot
 #' @importFrom stats as.formula binomial coef complete.cases cov dcauchy df glm glm.control model.frame model.matrix model.matrix.default model.response na.omit pnorm qnorm quantile rnorm runif sd vcov

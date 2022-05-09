@@ -211,7 +211,7 @@ rrreg.bayes <- function(formula, p, p0, p1, design, data,
     if(!(group.mixed %in% colnames(data)))
       stop("The covariate named in group.mixed cannot be found in the provided data frame.")
     grp <- data[na.cond == TRUE, paste(group.mixed)]
-    if(class(grp) == "character")
+    if(inherits(grp, "character"))
       grp <- as.factor(grp)
     
     grp.labels <- sort(unique(grp))
