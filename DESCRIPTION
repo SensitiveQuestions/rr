@@ -1,11 +1,11 @@
 Package: rr
-Version: 1.5
+Version: 1.5.1
 Date: 2017-8-11
 Title: Statistical Methods for the Randomized Response Technique
-Authors@R: c(person("Graeme", "Blair", email = "graeme.blair@ucla.edu", role = c("aut", "cre")),
-             person("Yang-Yang", "Zhou", email = "yz3@princeton.edu", role = c("aut")),
-             person("Kosuke", "Imai", email = "kimai@princeton.edu", role = c("aut")),
-             person("Winston", "Chou", email = "macartan@gmail.com", role = c("ctb")))
+Authors@R: c(person("Graeme", "Blair", email = "graeme.blair@gmail.com", role = c("aut", "cre")),
+             person("Yang-Yang", "Zhou", email = "yangyang.zhou@ubc.ca", role = c("aut")),
+             person("Kosuke", "Imai", email = "imai@harvard.edu", role = c("aut")),
+             person("Winston", "Chou", email = "wchou@princeton.edu", role = c("ctb")))
 Depends:
     R (>= 3.0.0),
     utils
