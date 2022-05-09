@@ -4,7 +4,8 @@
 \alias{nigeria-data}
 \title{Nigeria Randomized Response Survey Experiment on Social Connections to Armed
 Groups}
-\format{A data frame containing 2457 observations.  The variables are:
+\format{
+A data frame containing 2457 observations.  The variables are:
 \itemize{ \item \code{Quesid}: Survey ID of civilian respondent.  \item
 \code{rr.q1}: Randomized response survey item using the Forced Response
 Design asking the respondent whether they hold direct social connections
@@ -21,7 +22,8 @@ university; 9 if finished university; 10 if received graduate (masters or
 Ph.D) education.  \item \code{cov.female}: Gender. 0 if male; 1 if female.
 \item \code{civic}: Whether or not the respondent is a member of a civic
 group in their communities, such as youth groups , women's groups, or
-community development committees.  }}
+community development committees.  }
+}
 \source{
 Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) Replication
 data for: Design and Analysis of the Randomized Response Technique.

@@ -78,7 +78,7 @@
 #' @references Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2015) "Design
 #' and Analysis of the Randomized Response Technique."  \emph{Journal of the 
 #' American Statistical Association.}
-#' Available at \url{http://graemeblair.com/papers/randresp.pdf}.
+#' Available at \url{https://graemeblair.com/papers/randresp.pdf}.
 #' @keywords power analysis
 #' @examples
 #' 

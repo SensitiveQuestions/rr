@@ -1,5 +1,7 @@
 ## Submission
 
+(Resubmitting with minor changes after fail on CRAN checks.)
+
 We are submitting this patch to address the USE_FC_LEN_T issue identified in Ripley's April 5 email. We apologize for the delay in submission and realize it resulted in the package getting pulled.
 
 In addition, the email address for the maintainer has been updated and some other minor changes caught by R CMD CHECK.
