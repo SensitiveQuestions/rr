@@ -41,7 +41,7 @@ Kosuke Imai, Departments of Government and Statistics, Harvard University
 \email{kimai@harvard.edu}, \url{https://imai.fas.harvard.edu}
 
 Yang-Yang Zhou, Department of Political Science, University of British Columbia
-\email{yangyang.zhou@ubc.ca}, \url{https://yangyangzhou.com}
+\email{yangyang.zhou@ubc.ca}, \url{https://www.yangyangzhou.com}
 
 Maintainer: Graeme Blair <graeme.blair@gmail.com>
 }

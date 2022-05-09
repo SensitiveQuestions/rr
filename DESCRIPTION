@@ -28,4 +28,5 @@ LazyData: yes
 License: GPL (>= 3)
 Suggests:
     testthat
+Encoding: UTF-8
 RoxygenNote: 7.1.2
