@@ -25,13 +25,13 @@
 #' @aliases rr-package rr
 #' @docType package
 #' @author Graeme Blair, Experiments in Governance and Politics, Columbia
-#' University \email{graeme.blair@@gmail.com}, \url{http://graemeblair.com}
+#' University \email{graeme.blair@@gmail.com}, \url{https://graemeblair.com}
 #' 
 #' Kosuke Imai, Departments of Government and Statistics, Harvard University
-#' \email{kimai@@harvard.edu}, \url{http://imai.princeton.edu}
+#' \email{kimai@@harvard.edu}, \url{https://imai.fas.harvard.edu}
 #' 
-#' Yang-Yang Zhou, Department of Politics, University of British Columbia
-#' \email{yangyang.zhou@@ubc.ca}, \url{http://yangyangzhou.com}
+#' Yang-Yang Zhou, Department of Political Science, University of British Columbia
+#' \email{yangyang.zhou@@ubc.ca}, \url{https://yangyangzhou.com}
 #' 
 #' Maintainer: Graeme Blair <graeme.blair@@gmail.com>
 #' @references Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2015) "Design
