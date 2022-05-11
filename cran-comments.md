@@ -1,6 +1,6 @@
 ## Submission
 
-(Resubmitting with minor changes to URLs requested by Uwe.)
+(Resubmitting with changes requested by Victoria.)
 
 We are submitting this patch to address the USE_FC_LEN_T issue identified in Ripley's April 5 email. We apologize for the delay in submission and realize it resulted in the package getting pulled.
 
