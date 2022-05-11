@@ -555,7 +555,7 @@ se.f.rr <- function(p, p0, p1, q, design, n, r, presp){
 #' Available at \url{http://imai.princeton.edu/research/randresp.html}.
 #' @keywords power analysis
 #' 
-#' @value Power curve plot
+#' @return Power curve plot
 #' 
 #' @examples
 #' 

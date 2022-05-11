@@ -86,6 +86,9 @@ The default is \code{TRUE}.}
 
 \item{...}{Additional arguments to be passed to \code{par()}}
 }
+\value{
+Power curve plot
+}
 \description{
 \code{power.rr.plot} generates a power analysis plot for randomized response
 survey designs.
