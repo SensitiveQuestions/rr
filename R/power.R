@@ -92,28 +92,6 @@
 #'              design = "forced-known", sig.level = .01,
 #'              type = "one.sample", alternative = "one.sided")
 #' 				       
-#' \dontrun{
-#' 
-#' ## Find power varying the number of respondents from 250 to 2500 and 
-#' ## the population proportion of respondents possessing the sensitive 
-#' ## trait from 0 to .15
-#' 
-#' presp.seq <- seq(from = 0, to = .15, by = .0025)
-#' n.seq <- c(250, 500, 1000, 2000, 2500)
-#' power <- list()
-#' for(n in n.seq) {
-#'     power[[n]] <- rep(NA, length(presp.seq))
-#'     for(i in 1:length(presp.seq))
-#'         power[[n]][i] <- power.rr.test(p = 2/3, p1 = 1/6, p0 = 1/6, n = n, 
-#'                                        presp = presp.seq[i], presp.null = 0,
-#'                                        design = "forced-known", sig.level = .01, 
-#'                                        type = "one.sample",
-#'                                        alternative = "one.sided")$power
-#'     }
-#'     
-#' ## Replicates the results for Figure 2 in Blair, Imai, and Zhou (2014)
-#' }
-#' 
 #' @export
 power.rr.test <- function(p, p0, p1, q, design, n = NULL, r, presp, presp.null = NULL, sig.level, 
                           prespT, prespC, prespT.null = NULL, prespC.null,
@@ -576,6 +554,9 @@ se.f.rr <- function(p, p0, p1, q, design, n, r, presp){
 #' and Analysis of the Randomized Response Technique."  \emph{Working Paper.}
 #' Available at \url{http://imai.princeton.edu/research/randresp.html}.
 #' @keywords power analysis
+#' 
+#' @value Power curve plot
+#' 
 #' @examples
 #' 
 #' ## Generate a power plot for the forced design with known 
@@ -583,7 +564,6 @@ se.f.rr <- function(p, p0, p1, q, design, n, r, presp){
 #' ## and 1/6 forced to say "no", varying the number of respondents from 
 #' ## 250 to 2500 and the population proportion of respondents 
 #' ## possessing the sensitive trait from 0 to .15.
-#' 
 #' 
 #' presp.seq <- seq(from = 0, to = .15, by = .0025)
 #' n.seq <- c(250, 500, 1000, 2000, 2500)
@@ -655,8 +635,11 @@ power.rr.plot <- function(p, p0, p1, q, design, n.seq, r, presp.seq, presp.null 
   }
   }
   
-  if(par == TRUE)
-  par(oma = c(0, 0, 0, 0), mar = c(3.6, 3.6, 0, 0), las = 1, mgp = c(2, .7, 0), tck = -.01, cex = 0.8)  
+  if(par == TRUE) {
+    oldpar <- par(no.readonly = TRUE)
+    on.exit(par(oldpar))
+    par(oma = c(0, 0, 0, 0), mar = c(3.6, 3.6, 0, 0), las = 1, mgp = c(2, .7, 0), tck = -.01, cex = 0.8)  
+  }
   
   plot(0, 1, type = "n", xlim = c(0, max(presp.seq)), ylim = c(0, 1.05), axes = F, 
        xlab = "", ylab = "")

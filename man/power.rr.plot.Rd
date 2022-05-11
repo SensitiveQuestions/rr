@@ -106,7 +106,6 @@ sample sizes are shown as different lines in grayscale.
 ## 250 to 2500 and the population proportion of respondents 
 ## possessing the sensitive trait from 0 to .15.
 
-
 presp.seq <- seq(from = 0, to = .15, by = .0025)
 n.seq <- c(250, 500, 1000, 2000, 2500)
 power.rr.plot(p = 2/3, p1 = 1/6, p0 = 1/6, n.seq = n.seq, 

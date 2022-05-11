@@ -119,12 +119,13 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #'                          data = nigeria, 
 #'                       p = p, p1 = p1, p0 = p0,
 #'                       design = "forced-known")
+#'                       
+#' \donttest{
 #' 
 #' library(MASS)
 #' draws <- mvrnorm(n = 3, mu = coef(mle.estimates), 
 #'   Sigma = vcov(mle.estimates) * 9)
 #' 
-#' \dontrun{ 
 #' ## run three chains
 #' bayes.1 <- rrreg.bayes(rr.q1 ~ cov.asset.index + cov.married + 
 #'                          I(cov.age/10) + I((cov.age/10)^2) + cov.education + cov.female,   
@@ -146,6 +147,7 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #' bayes <- as.list(bayes.1, bayes.2, bayes.3)
 #' 
 #' summary(bayes)
+#' 
 #' }
 #' 
 #' @importFrom coda mcmc

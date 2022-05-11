@@ -71,7 +71,6 @@ then directly inputted into this function.
 }
 \examples{
 
-\dontrun{
 data(nigeria)
 
 set.seed(1)
@@ -97,7 +96,6 @@ rr.q1.reg.pred <- predict(rr.q1.reg.obj, given.y = FALSE,
                                 n.sims = 10000)
 
 ## Replicates Table 3 in Blair, Imai, and Zhou (2014)
-}
 
 }
 \references{

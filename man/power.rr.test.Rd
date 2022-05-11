@@ -115,28 +115,6 @@ power.rr.test(p = 2/3, p1 = 1/6, p0 = 1/6, n = 200,
              design = "forced-known", sig.level = .01,
              type = "one.sample", alternative = "one.sided")
 				       
-\dontrun{
-
-## Find power varying the number of respondents from 250 to 2500 and 
-## the population proportion of respondents possessing the sensitive 
-## trait from 0 to .15
-
-presp.seq <- seq(from = 0, to = .15, by = .0025)
-n.seq <- c(250, 500, 1000, 2000, 2500)
-power <- list()
-for(n in n.seq) {
-    power[[n]] <- rep(NA, length(presp.seq))
-    for(i in 1:length(presp.seq))
-        power[[n]][i] <- power.rr.test(p = 2/3, p1 = 1/6, p0 = 1/6, n = n, 
-                                       presp = presp.seq[i], presp.null = 0,
-                                       design = "forced-known", sig.level = .01, 
-                                       type = "one.sample",
-                                       alternative = "one.sided")$power
-    }
-    
-## Replicates the results for Figure 2 in Blair, Imai, and Zhou (2014)
-}
-
 }
 \references{
 Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2015) "Design

@@ -4,7 +4,7 @@
 \alias{predict.rrreg.predictor}
 \title{Predicted Probabilities for Randomized Response as a Regression Predictor}
 \usage{
-predict.rrreg.predictor(object, fix.z = NULL, alpha = .05,
+\method{predict}{rrreg.predictor}(object, fix.z = NULL, alpha = .05,
 n.sims = 1000, avg = FALSE, newdata = NULL, quasi.bayes = FALSE, keep.draws
 = FALSE, ...)
 }
@@ -77,7 +77,6 @@ object, is then directly inputted into this function.
 }
 \examples{
 
-\dontrun{
 data(nigeria)
 
 ## Define design parameters
@@ -105,7 +104,6 @@ rr.q1.rrreg.predictor.pred <- predict(rr.q1.pred.obj,
                                  avg = TRUE, quasi.bayes = TRUE, 
                                  n.sims = 10000)
 
-}
 }
 \references{
 Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design
