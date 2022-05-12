@@ -81,6 +81,7 @@ data(nigeria)
 
 ## Define design parameters
 
+\donttest{
 set.seed(44)
 
 p <- 2/3  # probability of answering honestly in Forced Response Design
@@ -102,8 +103,8 @@ rr.q1.pred.obj <-
 
 rr.q1.rrreg.predictor.pred <- predict(rr.q1.pred.obj, 
                                  avg = TRUE, quasi.bayes = TRUE, 
-                                 n.sims = 10000)
-
+                                 n.sims = 1000)
+}
 }
 \references{
 Blair, Graeme, Kosuke Imai and Yang-Yang Zhou. (2014) "Design

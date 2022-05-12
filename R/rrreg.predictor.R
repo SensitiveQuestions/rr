@@ -118,7 +118,6 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #' 
 #' ## Fit joint model of responses to an outcome regression of joining a civic 
 #' ## group and the randomized response item of having a militant social connection
-#' \dontrun{
 #' rr.q1.pred.obj <- 
 #'     rrreg.predictor(civic ~ cov.asset.index + cov.married + I(cov.age/10) + 
 #'               I((cov.age/10)^2) + cov.education + cov.female 
@@ -127,7 +126,7 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #'               p = p, p1 = p1, p0 = p0, design = "forced-known")
 #' 
 #' summary(rr.q1.pred.obj)
-#' }
+#'
 #' ## Replicates Table 4 in Blair, Imai, and Zhou (2014)
 #' 
 #' @importFrom arm bayesglm
@@ -575,6 +574,7 @@ print.summary.rrreg.predictor <- function(x, ...){
 #' 
 #' ## Define design parameters
 #' 
+#' \donttest{
 #' set.seed(44)
 #' 
 #' p <- 2/3  # probability of answering honestly in Forced Response Design
@@ -596,8 +596,8 @@ print.summary.rrreg.predictor <- function(x, ...){
 #' 
 #' rr.q1.rrreg.predictor.pred <- predict(rr.q1.pred.obj, 
 #'                                  avg = TRUE, quasi.bayes = TRUE, 
-#'                                  n.sims = 10000)
-#' 
+#'                                  n.sims = 1000)
+#' }
 #' @importFrom MASS mvrnorm
 #' @method predict rrreg.predictor
 #' @export
