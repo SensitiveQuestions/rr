@@ -1,7 +1,5 @@
 context("Tests Bayesian regression code (rrreg.bayes)")
 
-rm(list=ls())
-
 ## Define design parameters
 p <- 2/3  # probability of answering honestly in Forced Response Design
 p1 <- 1/6 # probability of forced 'yes'

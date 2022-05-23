@@ -1,7 +1,5 @@
 context("Tests power analysis code (power.rr.test)")
 
-rm(list=ls())
-
 ####### FORCED DESIGN ####################
 
 ## Define design parameters
