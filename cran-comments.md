@@ -1,6 +1,6 @@
 ## Submission
 
-(Resubmitting with minor change to duration of examples per automatic tests. Sorry!)
+(Resubmitting with minor change to remove rm(list=ls()) per email from Victoria.)
 
 We are submitting this patch to address the USE_FC_LEN_T issue identified in Ripley's April 5 email. We apologize for the delay in submission and realize it resulted in the package getting pulled.
 
