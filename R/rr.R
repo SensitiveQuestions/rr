@@ -586,6 +586,7 @@ coef.rrreg <- function(object, ...){
 #' @param keep.draws Option to return the Monte Carlos draws of the quantity of
 #' interest, for use in calculating differences for example.
 #' @param ... Further arguments to be passed to \code{predict.rrreg()} command.
+#' 
 #' @return \code{predict.rrreg} returns predicted probabilities either for each
 #' observation in the data frame or the average over all observations. The
 #' output is a list that contains the following components:
@@ -611,7 +612,6 @@ coef.rrreg <- function(object, ...){
 #' @keywords predicted probabilities fitted values
 #' @examples
 #' 
-#' \dontrun{
 #' data(nigeria)
 #' 
 #' set.seed(1)
@@ -637,7 +637,6 @@ coef.rrreg <- function(object, ...){
 #'                                 n.sims = 10000)
 #' 
 #' ## Replicates Table 3 in Blair, Imai, and Zhou (2014)
-#' }
 #' 
 #' @importFrom MASS mvrnorm
 #' 

@@ -119,12 +119,13 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #'                          data = nigeria, 
 #'                       p = p, p1 = p1, p0 = p0,
 #'                       design = "forced-known")
+#'                       
+#' \donttest{
 #' 
 #' library(MASS)
 #' draws <- mvrnorm(n = 3, mu = coef(mle.estimates), 
 #'   Sigma = vcov(mle.estimates) * 9)
 #' 
-#' \dontrun{ 
 #' ## run three chains
 #' bayes.1 <- rrreg.bayes(rr.q1 ~ cov.asset.index + cov.married + 
 #'                          I(cov.age/10) + I((cov.age/10)^2) + cov.education + cov.female,   
@@ -146,6 +147,7 @@ logistic <- function(x) exp(x)/(1+exp(x))
 #' bayes <- as.list(bayes.1, bayes.2, bayes.3)
 #' 
 #' summary(bayes)
+#' 
 #' }
 #' 
 #' @importFrom coda mcmc
@@ -211,7 +213,7 @@ rrreg.bayes <- function(formula, p, p0, p1, design, data,
     if(!(group.mixed %in% colnames(data)))
       stop("The covariate named in group.mixed cannot be found in the provided data frame.")
     grp <- data[na.cond == TRUE, paste(group.mixed)]
-    if(class(grp) == "character")
+    if(inherits(grp, "character"))
       grp <- as.factor(grp)
     
     grp.labels <- sort(unique(grp))
@@ -239,11 +241,11 @@ rrreg.bayes <- function(formula, p, p0, p1, design, data,
   
   if (missing("beta.tune")) {
     stop("The Metropolis tuning input object beta.tune is required.")
-  } else if (class(beta.tune) == "numeric" & length(beta.tune) == 1 & nPar > 1) {
+  } else if (inherits(beta.tune, "numeric") & length(beta.tune) == 1 & nPar > 1) {
     beta.tune <- diag(nPar) * beta.tune
-  } else if (class(beta.tune) == "numeric" & length(beta.tune) == nPar) {
+  } else if (inherits(beta.tune, "numeric") & length(beta.tune) == nPar) {
     beta.tune <- diag(beta.tune)
-  } else if (class(beta.tune) == "numeric" | (class(beta.tune) == "matrix" & 
+  } else if (inherits(beta.tune, "numeric") | (inherits(beta.tune, "matrix") & 
                                                 (ncol(beta.tune) != nPar | nrow(beta.tune) != nPar))) {
     stop("The input beta.tune is malformed. It should be a scalar, a vector of length the number of predictors, or a diagonal matrix of dimensions the number of predictors.")
   }
@@ -252,10 +254,10 @@ rrreg.bayes <- function(formula, p, p0, p1, design, data,
             
     if (missing("Psi.start")) {
       Psi.start <- diag(10, ncol(z)) 
-    } else if (class(Psi.start) == "numeric" & 
+    } else if (inherits(Psi.start, "numeric") & 
                  (length(Psi.start) == 1 | length(Psi.start) == ncol(z))) {
       Psi.start <- diag(ncol(z)) * Psi.start
-    } else if (class(Psi.start) == "numeric" | (class(Psi.start) == "matrix" & 
+    } else if (inherits(Psi.start, "numeric") | (inherits(Psi.start, "matrix") & 
                                                   (nrow(Psi.start) != ncol(z) | ncol(Psi.start) != ncol(z)))) {
       stop("The input Psi.start is malformed. It should either be a square matrix of dimensions the number of columns of Z, a scalar, or a vector of length number of columns of Z.")
     }
@@ -265,19 +267,19 @@ rrreg.bayes <- function(formula, p, p0, p1, design, data,
     }
     if (missing("Psi.scale")) {
       Psi.scale <- diag(2, ncol(z)) 
-    } else if (class(Psi.scale) == "numeric" & 
+    } else if (inherits(Psi.scale, "numeric") & 
                  (length(Psi.scale) == 1 | length(Psi.scale) == ncol(z))) {
       Psi.scale <- diag(ncol(z)) * Psi.scale
-    } else if (class(Psi.scale) == "numeric" | (class(Psi.scale) == "matrix" & 
+    } else if (inherits(Psi.scale, "numeric") | (inherits(Psi.scale, "matrix") & 
                  (nrow(Psi.scale) != ncol(z) | ncol(Psi.scale) != ncol(z)))) {
       stop("The input Psi.scale is malformed. It should either be a square matrix of dimensions the number of columns of Z, a scalar, or a vector of length number of columns of Z.")
     }
 
     if (missing("Psi.tune")) {
       stop("The Metropolis tuning input object psi.tune is required.")
-    } else if (class(Psi.tune) == "numeric" & length(Psi.tune) == 1 & length(unique(grp)) > 1) {
+    } else if (inherits(Psi.tune, "numeric") & length(Psi.tune) == 1 & length(unique(grp)) > 1) {
       Psi.tune <- rep(Psi.tune, length(unique(grp)))
-    } else if (class(Psi.tune) == "matrix" | (class(Psi.tune) == "numeric" & (length(Psi.tune) != length(unique(grp))))) {
+    } else if (inherits(Psi.tune, "matrix") | (inherits(Psi.tune, "numeric") & (length(Psi.tune) != length(unique(grp))))) {
       stop("The input Psi.tune is malformed. It should be either a scalar or a vector of length the number of groups.")
     }
   }

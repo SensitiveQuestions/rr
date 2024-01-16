@@ -86,6 +86,9 @@ The default is \code{TRUE}.}
 
 \item{...}{Additional arguments to be passed to \code{par()}}
 }
+\value{
+Power curve plot
+}
 \description{
 \code{power.rr.plot} generates a power analysis plot for randomized response
 survey designs.
@@ -105,7 +108,6 @@ sample sizes are shown as different lines in grayscale.
 ## and 1/6 forced to say "no", varying the number of respondents from 
 ## 250 to 2500 and the population proportion of respondents 
 ## possessing the sensitive trait from 0 to .15.
-
 
 presp.seq <- seq(from = 0, to = .15, by = .0025)
 n.seq <- c(250, 500, 1000, 2000, 2500)

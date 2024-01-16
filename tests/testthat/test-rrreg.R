@@ -1,7 +1,5 @@
 context("Tests regression code (rrreg)")
 
-rm(list=ls())
-
 ####### FORCED DESIGN ####################
 
 ## Define design parameters

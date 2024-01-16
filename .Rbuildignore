@@ -6,3 +6,6 @@ README.md
 ^docs$
 _pkgdown.yml
 ^_pkgdown\.yml$
+^CRAN-RELEASE$
+^cran-comments\.md$
+^CRAN-SUBMISSION$

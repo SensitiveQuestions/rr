@@ -6,12 +6,12 @@ citEntry(entry = "misc",
                    as.person("Kosuke Imai")),
   howpublished = "Available at The Comprehensive R Archive Network (CRAN)",
   year         = "2015",
-  url          = "http://CRAN.R-project.org/package=rr",
+  url          = "https://CRAN.R-project.org/package=rr",
 
   textVersion  =
   paste("Graeme Blair, Yang-Yang Zhou, and Kosuke Imai (2015).",
         "rr: Statistical Methods for the Randomized Response Technique.",
         "Available at The Comprehensive R Archive Network (CRAN).",
-        "URL http://CRAN.R-project.org/package=rr.")
+        "URL https://CRAN.R-project.org/package=rr")
 )
 
