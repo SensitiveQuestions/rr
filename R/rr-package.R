@@ -17,9 +17,6 @@
 #' the standard designs, specifically to allow for non-compliance and unknown
 #' distribution to the unrelated question under the unrelated question design.
 #' 
-#' \tabular{ll}{ Package: \tab rr\cr Type: \tab Package\cr Version: \tab 1.2\cr
-#' Date: \tab 2015-3-8\cr License: \tab GPL (>= 2)\cr }
-#' 
 #' @name rr-package
 #' @useDynLib rr
 #' @aliases rr-package rr
