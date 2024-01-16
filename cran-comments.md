@@ -1,17 +1,12 @@
 ## Submission
 
-(Resubmitting with minor change to remove rm(list=ls()) per email from Victoria.)
-
-We are submitting this patch to address the USE_FC_LEN_T issue identified in Ripley's April 5 email. We apologize for the delay in submission and realize it resulted in the package getting pulled.
-
-In addition, the email address for the maintainer has been updated and some other minor changes caught by R CMD CHECK.
+Minor change to address Kurt email from 2023-08-19, removing table of meta info in rr/man/rr-package.Rd.
 
 Thank you!
 
 ## Test environments
-* local OS X install, R 3.5.1
-* ubuntu 12.04 (on travis-ci), R 3.5.1
-* win-builder (devel and release)
+* local OS X install, R 4.3.2
+* win-builder (oldrel, devel, and release)
 
 ## R CMD check results
 
